@@ -1,0 +1,11 @@
+flask
+flask-wtf
+google-cloud-firestore
+google-cloud-tasks
+esptool
+gunicorn
+google-cloud-storage
+google-cloud-run
+flask_socketio
+firebase_admin
+python-dotenv

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Programador WavesByte Cibtron WB-001</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Enlace a Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- Enlace a Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #343a40;
+            color: #fff;
+            padding: 15px 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        header button {
+            background-color: #e63946;
+            border: none;
+            padding: 10px 15px;
+            color: #fff;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        header button:hover {
+            background-color: #d62828;
+        }
+
+        .container {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        #jobLogs {
+            border: 1px solid #ccc;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #343a40;
+            color: #fff;
+            margin-top: 30px;
+        }
+
+        /* Estilos para inputs de solo lectura */
+        input[readonly] {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body onload="initializeForm();">
+    <header class="d-flex justify-content-between align-items-center">
+        <h1>Programador WavesByte Cibtron WB-001</h1>
+        <button onclick="logout()">Cerrar sesión</button>
+    </header>
+
+    <div class="container">
+        <h2>Configuración del Dispositivo</h2>
+        <form id="jobForm" onsubmit="executeAndProgram(event)">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="port">Estado del taxímetro:</label>
+                    <select id="port" name="port" class="form-control" required>
+                        <option value="" disabled selected>Esperando detección...</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="USER">Usuario:</label>
+                    <input type="text" id="USER" name="USER" class="form-control" readonly required>
+                </div>
+            </div>
+
+            <input type="hidden" id="UUID" name="UUID" required readonly />
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="PATENTE">PATENTE (AAAA-00 o AA00-00):</label>
+                    <input type="text" id="PATENTE" name="PATENTE" class="form-control" pattern="^([A-Z]{4}-\d{2}|[A-Z]{2}\d{2}-\d{2})$" title="Debe cumplir con el formato AAAA-00 o AA00-00" placeholder="Ejemplo: ABCD-12 o AB12-34" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="RESOLUCION">RESOLUCIÓN (decimal):</label>
+                    <input type="number" id="RESOLUCION" name="RESOLUCION" class="form-control" step="any" min="0" placeholder="Ejemplo: 1500.45" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="TARIFA_INICIAL">TARIFA INICIAL:</label>
+                    <input type="number" id="TARIFA_INICIAL" name="TARIFA_INICIAL" class="form-control" min="0" step="any" placeholder="Ejemplo: 450" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="TARIFA_CAIDA_PARCIAL_METROS">PRECIO CAÍDA METROS:</label>
+                    <input type="number" id="TARIFA_CAIDA_PARCIAL_METROS" name="TARIFA_CAIDA_PARCIAL_METROS" class="form-control" min="0" step="any" placeholder="Ejemplo: 200" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="TARIFA_CAIDA_PARCIAL_MINUTO">PRECIO CAÍDA MINUTO:</label>
+                    <input type="number" id="TARIFA_CAIDA_PARCIAL_MINUTO" name="TARIFA_CAIDA_PARCIAL_MINUTO" class="form-control" min="0" step="any" placeholder="Ejemplo: 200" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="MOSTRAR_VELOCIDAD_EN_PANTALLA">MOSTRAR VELOCIDAD:</label>
+                    <select id="MOSTRAR_VELOCIDAD_EN_PANTALLA" name="MOSTRAR_VELOCIDAD_EN_PANTALLA" class="form-control" required>
+                        <option value="true">Sí</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="COLOR_FONDO_PANTALLA">COLOR DE FONDO:</label>
+                    <select id="COLOR_FONDO_PANTALLA" name="COLOR_FONDO_PANTALLA" class="form-control" required>
+                        <option value="TFT_BLACK">Negro</option>
+                        <option value="TFT_YELLOW">Amarillo</option>
+                        <option value="TFT_WHITE">Blanco</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="COLOR_LETRAS_PANTALLA">COLOR DE LETRAS:</label>
+                    <select id="COLOR_LETRAS_PANTALLA" name="COLOR_LETRAS_PANTALLA" class="form-control" required>
+                        <option value="TFT_YELLOW">Amarillo</option>
+                        <option value="TFT_BLACK">Negro</option>
+                        <option value="TFT_WHITE">Blanco</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="COLOR_PRECIO_PANTALLA">COLOR DE PRECIO:</label>
+                    <select id="COLOR_PRECIO_PANTALLA" name="COLOR_PRECIO_PANTALLA" class="form-control" required>
+                        <option value="TFT_WHITE">Blanco</option>
+                        <option value="TFT_BLACK">Negro</option>
+                        <option value="TFT_YELLOW">Amarillo</option>
+                    </select>
+                </div>
+            </div>
+
+            <h4 class="mt-4">Propagandas</h4>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="PROPAGANDA_1">PROPAGANDA 1:</label>
+                    <input type="text" id="PROPAGANDA_1" name="PROPAGANDA_1" class="form-control" maxlength="20" placeholder="Máx. 20 caracteres" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="PROPAGANDA_2">PROPAGANDA 2:</label>
+                    <input type="text" id="PROPAGANDA_2" name="PROPAGANDA_2" class="form-control" maxlength="20" placeholder="Máx. 20 caracteres" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="PROPAGANDA_3">PROPAGANDA 3:</label>
+                    <input type="text" id="PROPAGANDA_3" name="PROPAGANDA_3" class="form-control" maxlength="20" placeholder="Máx. 20 caracteres" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="PROPAGANDA_4">PROPAGANDA 4:</label>
+                    <input type="text" id="PROPAGANDA_4" name="PROPAGANDA_4" class="form-control" maxlength="20" placeholder="Máx. 20 caracteres" required>
+                </div>
+            </div>
+
+            <button id="executeButton" type="submit" class="btn btn-primary btn-block">Programar WavesByte Cibtron WB-001</button>
+        </form>
+
+        <h3 class="mt-5">Estado del proceso</h3>
+        <div id="jobLogs"></div>
+    </div>
+
+    <footer>
+        WavesByte &copy;
+    </footer>
+
+    <!-- Enlace a jQuery y Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script>
+        const socket = io();
+
+        const executeButton = document.getElementById("executeButton");
+
+        // Completar USER y UUID dinámicamente
+        function initializeForm() {
+            const email = "{{ email }}"; // Sustituido dinámicamente en el backend
+            document.getElementById("USER").value = email.split("@")[0];
+            document.getElementById("UUID").value = generateUUID();
+
+            executeButton.disabled = true; // Deshabilitar el botón inicialmente
+        }
+
+        // Generar un UUID
+        function generateUUID() {
+            return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+                /[xy]/g,
+                function (c) {
+                    const r = (Math.random() * 16) | 0,
+                        v = c === "x" ? r : (r & 0x3) | 0x8;
+                    return v.toString(16);
+                }
+            );
+        }
+
+        // Escuchar actualizaciones de log desde el servidor
+        socket.on("log_update", (data) => {
+            const logContainer = document.getElementById("jobLogs");
+            logContainer.innerHTML += `<p><strong>Status:</strong> ${data.status}</p>`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+
+            if (data.status.includes("WavesByte Cibtron WB-001 programado exitosamente")) {
+                alert("¡El Taxímetro WavesByte Cibtron WB-001 ha sido programado con éxito!");
+            }
+        });
+
+        // Escuchar actualizaciones de puertos
+        socket.on("update_ports", (ports) => {
+            const portSelect = document.getElementById("port");
+            portSelect.innerHTML = ""; // Limpiar el selector antes de llenarlo
+
+            if (ports.length > 0) {
+                // Mostrar un mensaje amigable si se detecta el dispositivo
+                const option = document.createElement("option");
+                option.value = ports[0].device; // Asumimos que es el primer puerto detectado
+                option.textContent = "Taxímetro WavesByte conectado";
+                portSelect.appendChild(option);
+
+                executeButton.disabled = false; // Habilitar el botón
+            } else {
+                const option = document.createElement("option");
+                option.value = "";
+                option.textContent = "No se detectó el taxímetro";
+                portSelect.appendChild(option);
+
+                executeButton.disabled = true; // Deshabilitar el botón
+            }
+        });
+
+        // Ejecutar trabajo y programar el dispositivo
+        async function executeAndProgram(event) {
+            event.preventDefault();
+            const formData = new FormData(document.getElementById("jobForm"));
+            const selectedPort = document.getElementById("port").value;
+
+            if (!selectedPort) {
+                alert("Debe conectar el taxímetro antes de ejecutar el trabajo.");
+                return;
+            }
+
+            formData.append("port", selectedPort);
+            const logContainer = document.getElementById("jobLogs");
+            logContainer.innerHTML = `<p><strong>Status:</strong> Comenzó la ejecución del trabajo y la programación.</p>`;
+
+            try {
+                const response = await fetch("/execute_and_program", {
+                    method: "POST",
+                    body: formData,
+                });
+                const result = await response.json();
+
+                if (result.status !== "success") {
+                    logContainer.innerHTML += `<p><strong>Status:</strong> Error: ${result.message}</p>`;
+                    alert(`Error: ${result.message}`);
+                }
+            } catch (error) {
+                logContainer.innerHTML += `<p><strong>Status:</strong> Error: ${error.message}</p>`;
+                alert(`Error al ejecutar el trabajo: ${error.message}`);
+            }
+        }
+
+        function logout() {
+            // Confirmación del usuario
+            if (!confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+                return;
+            }
+
+            // Hacer una petición al backend para eliminar la cookie
+            fetch('/logout', {
+                method: 'POST',
+                credentials: 'include' // Para enviar las cookies en la petición
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    // Mostrar mensaje de cierre de sesión
+                    alert("Sesión cerrada correctamente.");
+
+                    // Redirigir al usuario a la página de inicio de sesión
+                    window.location.href = "/login";
+                } else {
+                    alert("Error al cerrar sesión.");
+                }
+            })
+            .catch(error => {
+                console.error("Error al cerrar sesión:", error);
+                alert("Error al cerrar sesión.");
+            });
+        }
+    </script>
+</body>
+</html>
