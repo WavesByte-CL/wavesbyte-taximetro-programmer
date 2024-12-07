@@ -102,12 +102,20 @@
 
             <div class="form-row">
                 <div class="form-group col-md-6">
+                    <label for="NUMERO_SERIAL">NUMERO SERIAL:</label>
+                    <input type="text" id="NUMERO_SERIAL" name="NUMERO_SERIAL" class="form-control" title="Es el número serial del taxímetro" readonly required>
+                </div>
+                <div class="form-group col-md-6">
                     <label for="PATENTE">PATENTE (AAAA-00 o AA00-00):</label>
                     <input type="text" id="PATENTE" name="PATENTE" class="form-control" pattern="^([A-Z]{4}-\d{2}|[A-Z]{2}\d{2}-\d{2})$" title="Debe cumplir con el formato AAAA-00 o AA00-00" placeholder="Ejemplo: ABCD-12 o AB12-34" required>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="RESOLUCION">RESOLUCIÓN (decimal):</label>
                     <input type="number" id="RESOLUCION" name="RESOLUCION" class="form-control" step="any" min="0" placeholder="Ejemplo: 1500.45" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="CANTIDAD_PULSOS">DIVISOR PULSOS:</label>
+                    <input type="number" id="CANTIDAD_PULSOS" name="CANTIDAD_PULSOS" class="form-control" step="any" min="0" placeholder="Ejemplo: 1" required>
                 </div>
             </div>
 
@@ -130,8 +138,8 @@
                 <div class="form-group col-md-6">
                     <label for="MOSTRAR_VELOCIDAD_EN_PANTALLA">MOSTRAR VELOCIDAD:</label>
                     <select id="MOSTRAR_VELOCIDAD_EN_PANTALLA" name="MOSTRAR_VELOCIDAD_EN_PANTALLA" class="form-control" required>
-                        <option value="true">Sí</option>
                         <option value="false">No</option>
+                        <option value="true">Sí</option>    
                     </select>
                 </div>
                 <div class="form-group col-md-6">
