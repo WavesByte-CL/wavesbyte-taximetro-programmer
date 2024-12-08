@@ -9,3 +9,4 @@ google-cloud-run
 flask_socketio
 firebase_admin
 python-dotenv
+esp-idf-nvs-partition-gen

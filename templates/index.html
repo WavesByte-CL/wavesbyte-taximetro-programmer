@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Programador WavesByte Cibtron WB-001</title>
@@ -76,6 +77,7 @@
         }
     </style>
 </head>
+
 <body onload="initializeForm();">
     <header class="d-flex justify-content-between align-items-center">
         <h1>Programador WavesByte Cibtron WB-001</h1>
@@ -103,43 +105,53 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="NUMERO_SERIAL">NUMERO SERIAL:</label>
-                    <input type="text" id="NUMERO_SERIAL" name="NUMERO_SERIAL" class="form-control" title="Es el número serial del taxímetro" readonly required>
+                    <input type="text" id="NUMERO_SERIAL" name="NUMERO_SERIAL" class="form-control"
+                        title="Es el número serial del taxímetro" readonly required>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="PATENTE">PATENTE (AAAA-00 o AA00-00):</label>
-                    <input type="text" id="PATENTE" name="PATENTE" class="form-control" pattern="^([A-Z]{4}-\d{2}|[A-Z]{2}\d{2}-\d{2})$" title="Debe cumplir con el formato AAAA-00 o AA00-00" placeholder="Ejemplo: ABCD-12 o AB12-34" required>
+                    <input type="text" id="PATENTE" name="PATENTE" class="form-control"
+                        pattern="^([A-Z]{4}-\d{2}|[A-Z]{2}\d{2}-\d{2})$"
+                        title="Debe cumplir con el formato AAAA-00 o AA00-00" placeholder="Ejemplo: ABCD-12 o AB12-34"
+                        required>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="RESOLUCION">RESOLUCIÓN (decimal):</label>
-                    <input type="number" id="RESOLUCION" name="RESOLUCION" class="form-control" step="any" min="0" placeholder="Ejemplo: 1500.45" required>
+                    <input type="number" id="RESOLUCION" name="RESOLUCION" class="form-control" step="any" min="0"
+                        placeholder="Ejemplo: 1500.45" required>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="CANTIDAD_PULSOS">DIVISOR PULSOS:</label>
-                    <input type="number" id="CANTIDAD_PULSOS" name="CANTIDAD_PULSOS" class="form-control" step="any" min="0" placeholder="Ejemplo: 1" required>
+                    <input type="number" id="CANTIDAD_PULSOS" name="CANTIDAD_PULSOS" class="form-control" step="any"
+                        min="0" placeholder="Ejemplo: 1" required>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group col-md-4">
                     <label for="TARIFA_INICIAL">TARIFA INICIAL:</label>
-                    <input type="number" id="TARIFA_INICIAL" name="TARIFA_INICIAL" class="form-control" min="0" step="any" placeholder="Ejemplo: 450" required>
+                    <input type="number" id="TARIFA_INICIAL" name="TARIFA_INICIAL" class="form-control" min="0"
+                        step="any" placeholder="Ejemplo: 450" required>
                 </div>
                 <div class="form-group col-md-4">
                     <label for="TARIFA_CAIDA_PARCIAL_METROS">PRECIO CAÍDA METROS:</label>
-                    <input type="number" id="TARIFA_CAIDA_PARCIAL_METROS" name="TARIFA_CAIDA_PARCIAL_METROS" class="form-control" min="0" step="any" placeholder="Ejemplo: 200" required>
+                    <input type="number" id="TARIFA_CAIDA_PARCIAL_METROS" name="TARIFA_CAIDA_PARCIAL_METROS"
+                        class="form-control" min="0" step="any" placeholder="Ejemplo: 200" required>
                 </div>
                 <div class="form-group col-md-4">
                     <label for="TARIFA_CAIDA_PARCIAL_MINUTO">PRECIO CAÍDA MINUTO:</label>
-                    <input type="number" id="TARIFA_CAIDA_PARCIAL_MINUTO" name="TARIFA_CAIDA_PARCIAL_MINUTO" class="form-control" min="0" step="any" placeholder="Ejemplo: 200" required>
+                    <input type="number" id="TARIFA_CAIDA_PARCIAL_MINUTO" name="TARIFA_CAIDA_PARCIAL_MINUTO"
+                        class="form-control" min="0" step="any" placeholder="Ejemplo: 200" required>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="MOSTRAR_VELOCIDAD_EN_PANTALLA">MOSTRAR VELOCIDAD:</label>
-                    <select id="MOSTRAR_VELOCIDAD_EN_PANTALLA" name="MOSTRAR_VELOCIDAD_EN_PANTALLA" class="form-control" required>
+                    <select id="MOSTRAR_VELOCIDAD_EN_PANTALLA" name="MOSTRAR_VELOCIDAD_EN_PANTALLA" class="form-control"
+                        required>
                         <option value="false">No</option>
-                        <option value="true">Sí</option>    
+                        <option value="true">Sí</option>
                     </select>
                 </div>
                 <div class="form-group col-md-6">
@@ -175,25 +187,31 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="PROPAGANDA_1">PROPAGANDA 1:</label>
-                    <input type="text" id="PROPAGANDA_1" name="PROPAGANDA_1" class="form-control" maxlength="20" placeholder="Máx. 20 caracteres" required>
+                    <input type="text" id="PROPAGANDA_1" name="PROPAGANDA_1" class="form-control" maxlength="20"
+                        placeholder="Máx. 20 caracteres" required>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="PROPAGANDA_2">PROPAGANDA 2:</label>
-                    <input type="text" id="PROPAGANDA_2" name="PROPAGANDA_2" class="form-control" maxlength="20" placeholder="Máx. 20 caracteres" required>
+                    <input type="text" id="PROPAGANDA_2" name="PROPAGANDA_2" class="form-control" maxlength="20"
+                        placeholder="Máx. 20 caracteres" required>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="PROPAGANDA_3">PROPAGANDA 3:</label>
-                    <input type="text" id="PROPAGANDA_3" name="PROPAGANDA_3" class="form-control" maxlength="20" placeholder="Máx. 20 caracteres" required>
+                    <input type="text" id="PROPAGANDA_3" name="PROPAGANDA_3" class="form-control" maxlength="20"
+                        placeholder="Máx. 20 caracteres" required>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="PROPAGANDA_4">PROPAGANDA 4:</label>
-                    <input type="text" id="PROPAGANDA_4" name="PROPAGANDA_4" class="form-control" maxlength="20" placeholder="Máx. 20 caracteres" required>
+                    <input type="text" id="PROPAGANDA_4" name="PROPAGANDA_4" class="form-control" maxlength="20"
+                        placeholder="Máx. 20 caracteres" required>
                 </div>
             </div>
 
-            <button id="executeButton" type="submit" class="btn btn-primary btn-block">Programar WavesByte Cibtron WB-001</button>
+            <button id="executeButton" type="submit" class="btn btn-primary btn-block" disabled>
+                Programar WavesByte Cibtron WB-001
+            </button>
         </form>
 
         <h3 class="mt-5">Estado del proceso</h3>
@@ -211,16 +229,27 @@
     <script>
         const socket = io();
 
-        const executeButton = document.getElementById("executeButton");
-
         // Completar USER y UUID dinámicamente
         function initializeForm() {
             const email = "{{ email }}"; // Sustituido dinámicamente en el backend
             document.getElementById("USER").value = email.split("@")[0];
             document.getElementById("UUID").value = generateUUID();
-
             executeButton.disabled = true; // Deshabilitar el botón inicialmente
         }
+
+        function checkFormValidity() {
+            const port = document.getElementById("port").value;
+            // jobForm es el formulario con id="jobForm"
+            if (jobForm.checkValidity() && port !== "") {
+                executeButton.disabled = false;
+            } else {
+                executeButton.disabled = true;
+            }
+        }
+
+
+
+
 
         // Generar un UUID
         function generateUUID() {
@@ -242,8 +271,38 @@
 
             if (data.status.includes("WavesByte Cibtron WB-001 programado exitosamente")) {
                 alert("¡El Taxímetro WavesByte Cibtron WB-001 ha sido programado con éxito!");
+
+                setTimeout(() => {
+                    location.reload();
+                }, 3000); // Cambia el tiempo según prefieras (3000 ms = 3 segundos)
             }
+
         });
+
+        // Escuchar evento de número serial detectado
+        socket.on("serial_detected", (data) => {
+            const { port, serial } = data;
+            console.log(`Número serial detectado en el puerto ${port}: ${serial}`);
+
+            // Completar automáticamente el campo NUMERO_SERIAL
+            const numeroSerialInput = document.getElementById("NUMERO_SERIAL");
+            numeroSerialInput.value = serial;
+
+            // Informar al usuario que el número serial ha sido detectado
+            const logContainer = document.getElementById("jobLogs");
+            logContainer.innerHTML += `<p><strong>Status:</strong> Número serial detectado: ${serial}</p>`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        });
+
+        function clearForm() {
+            const form = document.getElementById("jobForm");
+            const userField = document.getElementById("USER");
+            const userValue = userField.value;
+            form.reset();
+            userField.value = userValue;
+            document.getElementById("port").innerHTML = '<option value="" disabled selected>Esperando detección...</option>';
+        }
+
 
         // Escuchar actualizaciones de puertos
         socket.on("update_ports", (ports) => {
@@ -251,22 +310,23 @@
             portSelect.innerHTML = ""; // Limpiar el selector antes de llenarlo
 
             if (ports.length > 0) {
-                // Mostrar un mensaje amigable si se detecta el dispositivo
                 const option = document.createElement("option");
                 option.value = ports[0].device; // Asumimos que es el primer puerto detectado
                 option.textContent = "Taxímetro WavesByte conectado";
                 portSelect.appendChild(option);
-
-                executeButton.disabled = false; // Habilitar el botón
             } else {
                 const option = document.createElement("option");
                 option.value = "";
                 option.textContent = "No se detectó el taxímetro";
                 portSelect.appendChild(option);
 
-                executeButton.disabled = true; // Deshabilitar el botón
+                clearForm();
             }
+
+            // Revalidar el formulario después de actualizar los puertos
+            checkFormValidity();
         });
+
 
         // Ejecutar trabajo y programar el dispositivo
         async function executeAndProgram(event) {
@@ -311,23 +371,30 @@
                 method: 'POST',
                 credentials: 'include' // Para enviar las cookies en la petición
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    // Mostrar mensaje de cierre de sesión
-                    alert("Sesión cerrada correctamente.");
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        // Mostrar mensaje de cierre de sesión
+                        alert("Sesión cerrada correctamente.");
 
-                    // Redirigir al usuario a la página de inicio de sesión
-                    window.location.href = "/login";
-                } else {
+                        // Redirigir al usuario a la página de inicio de sesión
+                        window.location.href = "/login";
+                    } else {
+                        alert("Error al cerrar sesión.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al cerrar sesión:", error);
                     alert("Error al cerrar sesión.");
-                }
-            })
-            .catch(error => {
-                console.error("Error al cerrar sesión:", error);
-                alert("Error al cerrar sesión.");
-            });
+                });
         }
+
+        const jobForm = document.getElementById("jobForm");
+        const executeButton = document.getElementById("executeButton");
+
+        jobForm.addEventListener('input', checkFormValidity);
+        jobForm.addEventListener('change', checkFormValidity);
     </script>
 </body>
+
 </html>

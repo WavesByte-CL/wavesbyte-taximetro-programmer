@@ -11,6 +11,7 @@ import time
 import subprocess
 from datetime import datetime 
 from dotenv import load_dotenv
+from serial_reader import restart_and_get_value
 
 load_dotenv()
 
@@ -20,6 +21,8 @@ FIREBASE_API_KEY = os.getenv("FIREBASE_API_KEY")
 
 # Definir ruta temporal para el binario
 TEMP_BIN_PATH = "./firmware.bin"
+
+numero_serial = None
 
 # Inicializar Firebase Admin
 try:
@@ -62,13 +65,67 @@ def list_serial_ports():
 
 # Emitir periódicamente los puertos disponibles al cliente
 def emit_ports_periodically():
+    global numero_serial
+    detected_ports = {}  # Diccionario para rastrear puertos y su información
+    retry_interval = 5   # Intervalo para reintentar obtener serial en segundos
+
     while True:
         try:
+            # Escanear los puertos disponibles
             ports = list_serial_ports()
+            current_ports = {port['device']: port for port in ports}
+
+            # Emitir la lista de puertos al cliente
             socketio.emit('update_ports', ports)
+
+            # Agregar nuevos puertos al diccionario
+            for port in current_ports.keys():
+                if port not in detected_ports:
+                    print(f"Nuevo puerto detectado: {port}")
+                    # Guardamos la última vez que intentamos leer el serial (0 indica que aún no)
+                    detected_ports[port] = {
+                        "last_attempt": 0,
+                        "serial": None
+                    }
+
+            # Intentar leer el número serial para cada puerto que aún no lo tenga
+            # y que haya pasado el intervalo de reintento.
+            current_time = time.time()
+            for port, info in list(detected_ports.items()):
+                if info["serial"] is None:
+                    # Verificar si podemos intentar ahora (pasó el intervalo desde el último intento)
+                    if current_time - info["last_attempt"] >= retry_interval:
+                        try:
+                            print(f"Intentando leer número serial en el puerto {port}...")
+                            numero_serial = restart_and_get_value(port, 115200, 2, keyword="NUMERO_SERIAL")
+                            detected_ports[port]["last_attempt"] = time.time()
+
+                            if numero_serial:
+                                print(f"Número serial detectado en {port}: {numero_serial}")
+                                detected_ports[port]["serial"] = numero_serial
+                                # Emitir el número serial al cliente
+                                socketio.emit('serial_detected', {"port": port, "serial": numero_serial})
+                                # Una vez detectado, ya no necesitamos reintentar
+                                # Podrías decidir si eliminar el puerto del diccionario o mantenerlo con el serial detectado
+                                # En este ejemplo, lo mantenemos con su serial para saber que ya fue encontrado
+                            else:
+                                print(f"No se encontró número serial en el puerto {port}. Reintentaremos en {retry_interval} segundos.")
+                        except Exception as e:
+                            print(f"Error al leer el número serial en el puerto {port}: {e}")
+                            # Actualizamos el último intento para reintentar más tarde
+                            detected_ports[port]["last_attempt"] = time.time()
+
+            # Limpiar puertos desconectados
+            disconnected_ports = set(detected_ports.keys()) - set(current_ports.keys())
+            for disconnected_port in disconnected_ports:
+                print(f"Puerto desconectado: {disconnected_port}")
+                del detected_ports[disconnected_port]
+
         except Exception as e:
             print(f"Error al emitir puertos: {e}")
-        time.sleep(2)
+
+        time.sleep(2)  # Esperar antes de volver a escanear
+
 
 # Descargar el binario desde Google Cloud Storage
 def download_binary(gcs_path):
@@ -137,7 +194,7 @@ def verify_token(token):
 # Escuchar cambios en Firestore
 def listen_to_job_status(user, uuid, port):
     fecha = datetime.utcnow().strftime("%Y-%m-%d")  # Obtener la fecha actual en formato YYYY-MM-DD
-    document_path = f"logs/{user}/{fecha}/{uuid}"
+    document_path = f"logs/{numero_serial}/{user}/{uuid}"
     print(f"Escuchando logs en: {document_path}")
 
     def on_snapshot(doc_snapshot, changes, read_time):
