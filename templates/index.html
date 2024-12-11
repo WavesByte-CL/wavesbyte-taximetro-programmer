@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Programador WavesByte Cibtron WB-001</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <title>Cibtron WB-001</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Enlace a Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -75,24 +76,158 @@
         input[readonly] {
             background-color: #e9ecef;
         }
+
+        /* Contenedor para desplazamiento horizontal */
+        .horizontal-scroll {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .horizontal-scroll::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .horizontal-scroll::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 5px;
+        }
+
+        .horizontal-scroll::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Tarjetas */
+        #certificatesList .card {
+            display: inline-block;
+            width: 250px;
+            /* Reducir tamaño de la tarjeta */
+            margin: 10px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        /* Ajustes de texto */
+        .card .card-title {
+            font-size: 0.9rem;
+            /* Hacer más pequeño el ID */
+            white-space: nowrap;
+            /* Evitar saltos de línea */
+            overflow: hidden;
+            /* Ocultar texto desbordante */
+            text-overflow: ellipsis;
+            /* Mostrar puntos suspensivos si el texto es demasiado largo */
+        }
+
+        .card .card-text {
+            font-size: 0.85rem;
+            /* Reducir el tamaño del texto de la tarjeta */
+            line-height: 1.2;
+            /* Espaciado entre líneas más compacto */
+        }
+
+        .btn-sm {
+            font-size: 0.8rem;
+            /* Botón más pequeño */
+            padding: 5px 10px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            /* Opcional: color de fondo */
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            /* Espaciado entre el logo y el título */
+        }
+
+        .logo-title img {
+            display: block;
+            /* Asegura que el logo no tenga espacio extra alrededor */
+        }
     </style>
 </head>
 
 <body onload="initializeForm();">
-    <header class="d-flex justify-content-between align-items-center">
-        <h1>Programador WavesByte Cibtron WB-001</h1>
-        <button onclick="logout()">Cerrar sesión</button>
+    <header>
+        <div class="header-content">
+            <div class="logo-title">
+                <!-- Inserta el logo SVG aquí usando la etiqueta <img> -->
+                <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo de WavesByte" width="50"
+                    height="50">
+                <h1>WavesByte Cibtron WB-001</h1>
+            </div>
+            <button onclick="logout()">Cerrar sesión</button>
+        </div>
     </header>
 
+
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Programaciones</h2>
+        <div class="horizontal-scroll">
+            <div id="certificatesList" class="d-flex">
+                <!-- Las tarjetas se agregarán aquí dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <!-- Modal para detalles -->
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailsModalLabel">Detalles de la programación</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="modalContent"></div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="container">
-        <h2>Configuración del Dispositivo</h2>
+
+        <h2>Configuración del Taxímetro Cibtron WB-001</h2>
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div>
+                <label>Estado del Puerto:</label>
+                <span id="port-status" style="font-weight: bold; color: gray;">Desconocido</span>
+            </div>
+        </div>
+
         <form id="jobForm" onsubmit="executeAndProgram(event)">
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="port">Estado del taxímetro:</label>
-                    <select id="port" name="port" class="form-control" required>
-                        <option value="" disabled selected>Esperando detección...</option>
-                    </select>
+                    <div class="input-group">
+                        <select id="port" name="port" class="form-control" required>
+                            <option value="" disabled selected>Esperando detección...</option>
+                        </select>
+                        <div class="input-group-append">
+                            <button id="updatePortsBtn" class="btn btn-outline-secondary"
+                                type="button">Actualizar</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="USER">Usuario:</label>
@@ -101,13 +236,59 @@
             </div>
 
             <input type="hidden" id="UUID" name="UUID" required readonly />
+            <input type="hidden" id="MARCA_TAXIMETRO" name="MARCA_TAXIMETRO" required readonly />
+            <input type="hidden" id="MODELO_TAXIMETRO" name="MODELO_TAXIMETRO" required readonly />
 
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="NUMERO_SERIAL">NUMERO SERIAL:</label>
-                    <input type="text" id="NUMERO_SERIAL" name="NUMERO_SERIAL" class="form-control"
-                        title="Es el número serial del taxímetro" readonly required>
+                    <label for="NUMERO_SERIAL">NÚMERO SERIAL:</label>
+                    <div class="input-group">
+                        <input type="text" id="NUMERO_SERIAL" name="NUMERO_SERIAL" class="form-control"
+                            title="Es el número serial del taxímetro" readonly required>
+                        <div class="input-group-append">
+                            <button id="searchSerialBtn" class="btn btn-outline-secondary" type="button">Rellenar
+                                Formulario</button>
+                            <button id="searchCertificateBtn" class="btn btn-primary ml-2" type="button">Buscar
+                                Programaciones</button>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="form-group col-md-6">
+                    <label for="NUMERO_SELLO">NÚMERO DE SELLO:</label>
+                    <input type="text" id="NUMERO_SELLO" name="NUMERO_SELLO" class="form-control" pattern="^\d+$"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Solo se permiten números"
+                        placeholder="Ejemplo: 1" required>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="NOMBRE_PROPIETARIO">NOMBRE DEL PROPIETARIO:</label>
+                    <input type="text" id="NOMBRE_PROPIETARIO" name="NOMBRE_PROPIETARIO" class="form-control"
+                        pattern="^[A-ZÑ ]+$" oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑ ]/g, '')"
+                        title="Solo letras mayúsculas" placeholder="Ejemplo: JUAN" required>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="APELLIDO_PROPIETARIO">APELLIDO DEL PROPIETARIO:</label>
+                    <input type="text" id="APELLIDO_PROPIETARIO" name="APELLIDO_PROPIETARIO" class="form-control"
+                        pattern="^[A-ZÑ ]+$" oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑ ]/g, '')"
+                        title="Solo letras mayúsculas" placeholder="Ejemplo: PEREZ" required>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="MARCA_VEHICULO">MARCA DEL VEHICULO:</label>
+                    <input type="text" id="MARCA_VEHICULO" name="MARCA_VEHICULO" class="form-control"
+                        pattern="^[A-ZÑ ]+$" oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑ ]/g, '')"
+                        title="Solo letras mayúsculas" placeholder="Ejemplo: NISSAN" required>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="YEAR_VEHICULO">AÑO DEL VEHICULO:</label>
+                    <input type="text" id="YEAR_VEHICULO" name="YEAR_VEHICULO" class="form-control" pattern="^\d{4}$"
+                        maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        title="Solo se permiten números de 4 dígitos" placeholder="Ejemplo: 2020" required>
+                </div>
+
                 <div class="form-group col-md-6">
                     <label for="PATENTE">PATENTE (AAAA-00 o AA00-00):</label>
                     <input type="text" id="PATENTE" name="PATENTE" class="form-control"
@@ -147,7 +328,7 @@
 
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="MOSTRAR_VELOCIDAD_EN_PANTALLA">MOSTRAR VELOCIDAD:</label>
+                    <label for="MOSTRAR_VELOCIDAD_EN_PANTALLA">MOSTRAR METROS EN PANTALLA:</label>
                     <select id="MOSTRAR_VELOCIDAD_EN_PANTALLA" name="MOSTRAR_VELOCIDAD_EN_PANTALLA" class="form-control"
                         required>
                         <option value="false">No</option>
@@ -160,6 +341,27 @@
                         <option value="TFT_BLACK">Negro</option>
                         <option value="TFT_YELLOW">Amarillo</option>
                         <option value="TFT_WHITE">Blanco</option>
+                        <option value="TFT_NAVY">Azul oscuro</option>
+                        <option value="TFT_DARKGREEN">Verde oscuro</option>
+                        <option value="TFT_DARKCYAN">Cian oscuro</option>
+                        <option value="TFT_MAROON">Granate</option>
+                        <option value="TFT_PURPLE">Púrpura</option>
+                        <option value="TFT_OLIVE">Oliva</option>
+                        <option value="TFT_LIGHTGREY">Gris claro</option>
+                        <option value="TFT_DARKGREY">Gris oscuro</option>
+                        <option value="TFT_BLUE">Azul</option>
+                        <option value="TFT_GREEN">Verde</option>
+                        <option value="TFT_CYAN">Cian</option>
+                        <option value="TFT_RED">Rojo</option>
+                        <option value="TFT_MAGENTA">Magenta</option>
+                        <option value="TFT_ORANGE">Naranja</option>
+                        <option value="TFT_GREENYELLOW">Verde amarillento</option>
+                        <option value="TFT_PINK">Rosa</option>
+                        <option value="TFT_BROWN">Marrón</option>
+                        <option value="TFT_GOLD">Oro</option>
+                        <option value="TFT_SILVER">Plata</option>
+                        <option value="TFT_SKYBLUE">Azul cielo</option>
+                        <option value="TFT_VIOLET">Violeta</option>
                     </select>
                 </div>
             </div>
@@ -171,6 +373,27 @@
                         <option value="TFT_YELLOW">Amarillo</option>
                         <option value="TFT_BLACK">Negro</option>
                         <option value="TFT_WHITE">Blanco</option>
+                        <option value="TFT_NAVY">Azul oscuro</option>
+                        <option value="TFT_DARKGREEN">Verde oscuro</option>
+                        <option value="TFT_DARKCYAN">Cian oscuro</option>
+                        <option value="TFT_MAROON">Granate</option>
+                        <option value="TFT_PURPLE">Púrpura</option>
+                        <option value="TFT_OLIVE">Oliva</option>
+                        <option value="TFT_LIGHTGREY">Gris claro</option>
+                        <option value="TFT_DARKGREY">Gris oscuro</option>
+                        <option value="TFT_BLUE">Azul</option>
+                        <option value="TFT_GREEN">Verde</option>
+                        <option value="TFT_CYAN">Cian</option>
+                        <option value="TFT_RED">Rojo</option>
+                        <option value="TFT_MAGENTA">Magenta</option>
+                        <option value="TFT_ORANGE">Naranja</option>
+                        <option value="TFT_GREENYELLOW">Verde amarillento</option>
+                        <option value="TFT_PINK">Rosa</option>
+                        <option value="TFT_BROWN">Marrón</option>
+                        <option value="TFT_GOLD">Oro</option>
+                        <option value="TFT_SILVER">Plata</option>
+                        <option value="TFT_SKYBLUE">Azul cielo</option>
+                        <option value="TFT_VIOLET">Violeta</option>
                     </select>
                 </div>
                 <div class="form-group col-md-6">
@@ -179,11 +402,31 @@
                         <option value="TFT_WHITE">Blanco</option>
                         <option value="TFT_BLACK">Negro</option>
                         <option value="TFT_YELLOW">Amarillo</option>
+                        <option value="TFT_NAVY">Azul oscuro</option>
+                        <option value="TFT_DARKGREEN">Verde oscuro</option>
+                        <option value="TFT_DARKCYAN">Cian oscuro</option>
+                        <option value="TFT_MAROON">Granate</option>
+                        <option value="TFT_PURPLE">Púrpura</option>
+                        <option value="TFT_OLIVE">Oliva</option>
+                        <option value="TFT_LIGHTGREY">Gris claro</option>
+                        <option value="TFT_DARKGREY">Gris oscuro</option>
+                        <option value="TFT_BLUE">Azul</option>
+                        <option value="TFT_GREEN">Verde</option>
+                        <option value="TFT_CYAN">Cian</option>
+                        <option value="TFT_RED">Rojo</option>
+                        <option value="TFT_MAGENTA">Magenta</option>
+                        <option value="TFT_ORANGE">Naranja</option>
+                        <option value="TFT_GREENYELLOW">Verde amarillento</option>
+                        <option value="TFT_PINK">Rosa</option>
+                        <option value="TFT_BROWN">Marrón</option>
+                        <option value="TFT_GOLD">Oro</option>
+                        <option value="TFT_SILVER">Plata</option>
+                        <option value="TFT_SKYBLUE">Azul cielo</option>
+                        <option value="TFT_VIOLET">Violeta</option>
                     </select>
                 </div>
             </div>
 
-            <h4 class="mt-4">Propagandas</h4>
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="PROPAGANDA_1">PROPAGANDA 1:</label>
@@ -216,6 +459,7 @@
 
         <h3 class="mt-5">Estado del proceso</h3>
         <div id="jobLogs"></div>
+
     </div>
 
     <footer>
@@ -227,13 +471,16 @@
     <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script>
-        const socket = io();
+        const socket = io("http://127.0.0.1:5000"); // Cambia por la URL de tu servidor
+
 
         // Completar USER y UUID dinámicamente
         function initializeForm() {
             const email = "{{ email }}"; // Sustituido dinámicamente en el backend
             document.getElementById("USER").value = email.split("@")[0];
             document.getElementById("UUID").value = generateUUID();
+            document.getElementById("MARCA_TAXIMETRO").value = "CIBTRON";
+            document.getElementById("MODELO_TAXIMETRO").value = "WB-001";
             executeButton.disabled = true; // Deshabilitar el botón inicialmente
         }
 
@@ -265,6 +512,7 @@
 
         // Escuchar actualizaciones de log desde el servidor
         socket.on("log_update", (data) => {
+            console.log("Evento log_update recibido:", data);
             const logContainer = document.getElementById("jobLogs");
             logContainer.innerHTML += `<p><strong>Status:</strong> ${data.status}</p>`;
             logContainer.scrollTop = logContainer.scrollHeight;
@@ -279,54 +527,86 @@
 
         });
 
-        // Escuchar evento de número serial detectado
-        socket.on("serial_detected", (data) => {
-            const { port, serial } = data;
-            console.log(`Número serial detectado en el puerto ${port}: ${serial}`);
+        socket.on("test_event", (data) => {
+            console.log("Evento 'test_event' recibido:", data);
 
-            // Completar automáticamente el campo NUMERO_SERIAL
-            const numeroSerialInput = document.getElementById("NUMERO_SERIAL");
-            numeroSerialInput.value = serial;
-
-            // Informar al usuario que el número serial ha sido detectado
+            // Opcional: Muestra el mensaje en un contenedor en la página
             const logContainer = document.getElementById("jobLogs");
-            logContainer.innerHTML += `<p><strong>Status:</strong> Número serial detectado: ${serial}</p>`;
+            logContainer.innerHTML += `<p><strong>Test Event:</strong> ${data.message}</p>`;
             logContainer.scrollTop = logContainer.scrollHeight;
         });
+
+
+        // Escuchar evento de número serial detectado
+        socket.on("serial_detected", (data) => {
+            console.log("Escuchando evento 'serial_detected'...");
+            console.log("Datos recibidos:", data);
+            const numeroSerialInput = document.getElementById("NUMERO_SERIAL");
+            if (numeroSerialInput) {
+                console.log("Campo de número serial encontrado, actualizando...");
+                numeroSerialInput.value = data.serial; // Completa el campo con el número serial
+            } else {
+                console.error("Campo de número serial no encontrado en el DOM.");
+            }
+        });
+
+
+
+        socket.on("connect", () => {
+            console.log("Conexión establecida con el servidor.");
+        });
+
+        socket.on("disconnect", () => {
+            console.log("Conexión perdida con el servidor.");
+        });
+
+        socket.on("connect_error", (error) => {
+            console.error("Error al conectar con el servidor:", error);
+        });
+
 
         function clearForm() {
             const form = document.getElementById("jobForm");
             const userField = document.getElementById("USER");
             const userValue = userField.value;
+            const uuidField = document.getElementById("UUID");
+            const uuidValue = uuidField.value;
+            const marcaField = document.getElementById("MARCA_TAXIMETRO");
+            const marcaValue = marcaField.value;
+            const modeloField = document.getElementById("MODELO_TAXIMETRO");
+            const modeloValue = modeloField.value;
             form.reset();
             userField.value = userValue;
+            uuidField.value = uuidValue;
+            marcaField.value = marcaValue;
+            modeloField.value = modeloValue;
             document.getElementById("port").innerHTML = '<option value="" disabled selected>Esperando detección...</option>';
         }
 
 
         // Escuchar actualizaciones de puertos
         socket.on("update_ports", (ports) => {
+            console.log("Evento 'update_ports' recibido:", ports);
+
             const portSelect = document.getElementById("port");
-            portSelect.innerHTML = ""; // Limpiar el selector antes de llenarlo
+            if (portSelect) {
+                portSelect.innerHTML = ""; // Limpia las opciones antes de llenarlas
 
-            if (ports.length > 0) {
-                const option = document.createElement("option");
-                option.value = ports[0].device; // Asumimos que es el primer puerto detectado
-                option.textContent = "Taxímetro WavesByte conectado";
-                portSelect.appendChild(option);
-            } else {
-                const option = document.createElement("option");
-                option.value = "";
-                option.textContent = "No se detectó el taxímetro";
-                portSelect.appendChild(option);
-
-                clearForm();
+                if (ports.length > 0) {
+                    ports.forEach((port) => {
+                        const option = document.createElement("option");
+                        option.value = port.device;
+                        option.textContent = `${port.description} (${port.device})`;
+                        portSelect.appendChild(option);
+                    });
+                } else {
+                    const option = document.createElement("option");
+                    option.value = "";
+                    option.textContent = "No se detectó el taxímetro";
+                    portSelect.appendChild(option);
+                }
             }
-
-            // Revalidar el formulario después de actualizar los puertos
-            checkFormValidity();
         });
-
 
         // Ejecutar trabajo y programar el dispositivo
         async function executeAndProgram(event) {
@@ -341,16 +621,21 @@
 
             formData.append("port", selectedPort);
             const logContainer = document.getElementById("jobLogs");
-            logContainer.innerHTML = `<p><strong>Status:</strong> Comenzó la ejecución del trabajo y la programación.</p>`;
+            logContainer.innerHTML = `<p><strong>Status:</strong> Comenzó la ejecución del trabajo y la programación, espere unos minutos...</p>`;
 
             try {
+                // Ejecutar el trabajo
                 const response = await fetch("/execute_and_program", {
                     method: "POST",
                     body: formData,
                 });
                 const result = await response.json();
 
-                if (result.status !== "success") {
+                if (result.status === "success") {
+                    // Iniciar monitoreo de logs
+                    const user = formData.get("USER");
+                    const uuid = formData.get("UUID");
+                } else {
                     logContainer.innerHTML += `<p><strong>Status:</strong> Error: ${result.message}</p>`;
                     alert(`Error: ${result.message}`);
                 }
@@ -394,6 +679,259 @@
 
         jobForm.addEventListener('input', checkFormValidity);
         jobForm.addEventListener('change', checkFormValidity);
+
+
+        document.getElementById('searchSerialBtn').addEventListener('click', async () => {
+            const serialNumber = document.getElementById('NUMERO_SERIAL').value;
+
+            if (!serialNumber) {
+                alert("Por favor, ingresa un número serial.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/search_serial?serial_number=${serialNumber}`);
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    const data = result.data.env_vars;
+
+                    // Completar los campos del formulario
+                    document.getElementById("MARCA_TAXIMETRO").value = data.MARCA_TAXIMETRO || "";
+                    document.getElementById("MODELO_TAXIMETRO").value = data.MODELO_TAXIMETRO || "";
+                    document.getElementById("NUMERO_SELLO").value = data.NUMERO_SELLO || "";
+                    document.getElementById("NOMBRE_PROPIETARIO").value = data.NOMBRE_PROPIETARIO || "";
+                    document.getElementById("APELLIDO_PROPIETARIO").value = data.APELLIDO_PROPIETARIO || "";
+                    document.getElementById("MARCA_VEHICULO").value = data.MARCA_VEHICULO || "";
+                    document.getElementById("YEAR_VEHICULO").value = data.YEAR_VEHICULO || "";
+                    document.getElementById("PATENTE").value = data.PATENTE || "";
+                    document.getElementById("RESOLUCION").value = data.RESOLUCION || "";
+                    document.getElementById("CANTIDAD_PULSOS").value = data.CANTIDAD_PULSOS || "";
+                    document.getElementById("TARIFA_INICIAL").value = data.TARIFA_INICIAL || "";
+                    document.getElementById("TARIFA_CAIDA_PARCIAL_METROS").value = data.TARIFA_CAIDA_PARCIAL_METROS || "";
+                    document.getElementById("TARIFA_CAIDA_PARCIAL_MINUTO").value = data.TARIFA_CAIDA_PARCIAL_MINUTO || "";
+                    document.getElementById("MOSTRAR_VELOCIDAD_EN_PANTALLA").value = data.MOSTRAR_VELOCIDAD_EN_PANTALLA || "";
+                    document.getElementById("COLOR_FONDO_PANTALLA").value = data.COLOR_FONDO_PANTALLA || "";
+                    document.getElementById("COLOR_LETRAS_PANTALLA").value = data.COLOR_LETRAS_PANTALLA || "";
+                    document.getElementById("COLOR_PRECIO_PANTALLA").value = data.COLOR_PRECIO_PANTALLA || "";
+                    document.getElementById("PROPAGANDA_1").value = data.PROPAGANDA_1 || "";
+                    document.getElementById("PROPAGANDA_2").value = data.PROPAGANDA_2 || "";
+                    document.getElementById("PROPAGANDA_3").value = data.PROPAGANDA_3 || "";
+                    document.getElementById("PROPAGANDA_4").value = data.PROPAGANDA_4 || "";
+
+                    alert("Datos completados exitosamente.");
+                } else {
+                    alert(result.message || "No se encontró información.");
+                }
+            } catch (error) {
+                console.error("Error al buscar el número serial:", error);
+                alert("Ocurrió un error al buscar el número serial.");
+            }
+        });
+
+
+
+        document.getElementById('searchCertificateBtn').addEventListener('click', async () => {
+            const serialNumber = document.getElementById('NUMERO_SERIAL').value;
+
+            if (!serialNumber) {
+                alert("Por favor, asegúrate de que el número serial esté presente.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/search_certificates?serial_number=${serialNumber}`);
+                const result = await response.json();
+                const certificatesList = document.getElementById("certificatesList");
+
+                certificatesList.innerHTML = ""; // Limpiar resultados previos
+
+                if (result.status === "success" && Array.isArray(result.data) && result.data.length > 0) {
+                    result.data.forEach(cert => {
+                        const data = cert.document_data;
+
+                        // Crear tarjeta
+                        const card = document.createElement("div");
+                        card.className = "card";
+
+                        card.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title">ID: ${cert.document_id}</h5>
+                        <p class="card-text">
+                            <strong>Fecha:</strong> ${new Date(data.date).toLocaleString()}<br>
+                            <strong>Nombre:</strong> ${data.env_vars?.NOMBRE_PROPIETARIO || "N/A"}<br>
+                            <strong>Apellido:</strong> ${data.env_vars?.APELLIDO_PROPIETARIO || "N/A"}<br>
+                            <strong>Patente:</strong> ${data.env_vars?.PATENTE || "N/A"}
+                        </p>
+                        <button class="btn btn-primary btn-sm" onclick='showDetails(${JSON.stringify(data)})'>
+                            <i class="fas fa-eye"></i> Ver detalles
+                        </button>
+                    </div>
+                `;
+                        certificatesList.appendChild(card);
+                    });
+                } else if (result.status === "success" && result.data.length === 0) {
+                    certificatesList.innerHTML = "<p>No se encontraron programaciones previas para este número serial.</p>";
+                } else {
+                    certificatesList.innerHTML = `<p>Error en la respuesta: ${JSON.stringify(result)}</p>`;
+                }
+            } catch (error) {
+                console.error("Error al buscar programaciones previas:", error);
+                certificatesList.innerHTML = `<p>Ocurrió un error: ${error.message}</p>`;
+            }
+        });
+
+        // Función para mostrar el modal con detalles
+        function showDetails(data) {
+            const modalContent = document.getElementById("modalContent");
+            modalContent.innerHTML = ""; // Limpiar contenido previo
+
+            if (data.env_vars && typeof data.env_vars === "object") {
+                const fieldMapping = {
+                    UUID: "UUID",
+                    USER: "PROGRAMADOR",
+                    DATE: "FECHA DE PROGRAMACIÓN",
+                    NUMERO_SERIAL: "NÚMERO DE SERIE",
+                    NUMERO_SELLO: "NÚMERO DE SELLO",
+                    MARCA_TAXIMETRO: "MARCA DEL TAXÍMETRO",
+                    MODELO_TAXIMETRO: "MODELO DEL TAXÍMETRO",
+                    NOMBRE_PROPIETARIO: "NOMBRE DEL PROPIETARIO",
+                    APELLIDO_PROPIETARIO: "APELLIDO DEL PROPIETARIO",
+                    MARCA_VEHICULO: "MARCA DEL VEHÍCULO",
+                    YEAR_VEHICULO: "AÑO DEL VEHÍCULO",
+                    PATENTE: "PATENTE",
+                    RESOLUCION: "RESOLUCIÓN",
+                    CANTIDAD_PULSOS: "DIVISOR",
+                    TARIFA_INICIAL: "TARIFA INICIAL",
+                    TARIFA_CAIDA_PARCIAL_METROS: "TARIFA CAÍDA PARCIAL METROS",
+                    TARIFA_CAIDA_PARCIAL_MINUTO: "TARIFA CAÍDA PARCIAL MINUTOS",
+                    MOSTRAR_VELOCIDAD_EN_PANTALLA: "MOSTRAR METROS EN PANTALLA",
+                    COLOR_FONDO_PANTALLA: "COLOR DE FONDO EN PANTALLA",
+                    COLOR_LETRAS_PANTALLA: "COLOR DE LETRAS EN PANTALLA",
+                    COLOR_PRECIO_PANTALLA: "COLOR DE PRECIO EN PANTALLA",
+                    PROPAGANDA_1: "PROPAGANDA Nº1",
+                    PROPAGANDA_2: "PROPAGANDA Nº2",
+                    PROPAGANDA_3: "PROPAGANDA Nº3",
+                    PROPAGANDA_4: "PROPAGANDA Nº4"
+                };
+                for (const [key, title] of Object.entries(fieldMapping)) {
+                    const value = data.env_vars[key] || "N/A";
+                    modalContent.innerHTML += `<p><strong>${title}:</strong> ${value}</p>`;
+                }
+            } else {
+                modalContent.innerHTML = `<p>No hay variables de entorno disponibles para mostrar.</p>`;
+            }
+
+            // Mostrar el modal
+            const detailsModal = new bootstrap.Modal(document.getElementById("detailsModal"));
+            detailsModal.show();
+        }
+
+
+
+        document.getElementById("updatePortsBtn").addEventListener("click", async () => {
+            const portSelect = document.getElementById("port");
+            const updatePortsBtn = document.getElementById("updatePortsBtn");
+            const serialInput = document.getElementById("NUMERO_SERIAL"); // Campo de número serial
+
+            // Deshabilitar el botón mientras se detectan puertos
+            updatePortsBtn.disabled = true;
+            updatePortsBtn.textContent = "Detectando...";
+
+            try {
+                const response = await fetch('/get_ports');
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    portSelect.innerHTML = '<option value="" disabled selected>Selecciona un puerto...</option>';
+                    data.ports.forEach(port => {
+                        const option = document.createElement("option");
+                        option.value = port.device;
+                        option.textContent = `${port.device} (${port.description})`;
+                        portSelect.appendChild(option);
+                    });
+
+                    // Habilitar el botón
+                    updatePortsBtn.disabled = false;
+                    updatePortsBtn.textContent = "Actualizar";
+
+                    // Escuchar cambios en el selector de puerto
+                    portSelect.addEventListener("change", async () => {
+                        const selectedPort = portSelect.value;
+                        if (selectedPort) {
+                            try {
+                                // Solicitar el número serial
+                                const serialResponse = await fetch('/get_serial_number', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ port: selectedPort })
+                                });
+                                const serialData = await serialResponse.json();
+
+                                if (serialData.status === "success") {
+                                    // Rellenar automáticamente el campo NUMERO_SERIAL
+                                    serialInput.value = serialData.serial_number;
+                                } else {
+                                    alert(`Error al detectar el número serial: ${serialData.message}`);
+                                }
+                            } catch (error) {
+                                console.error("Error al obtener el número de serie:", error);
+                                alert("Hubo un problema al detectar el número serial.");
+                            }
+                        }
+                    });
+                } else {
+                    console.error("Error al detectar puertos:", data.message);
+                    alert("Error al detectar puertos: " + data.message);
+                }
+            } catch (error) {
+                console.error("Error al realizar la solicitud:", error);
+                alert("Hubo un problema al detectar los puertos. Inténtalo de nuevo.");
+            } finally {
+                // Rehabilitar el botón
+                updatePortsBtn.disabled = false;
+                updatePortsBtn.textContent = "Actualizar";
+            }
+        });
+
+
+
+        let selectedPort = null; // Variable para almacenar el puerto seleccionado
+
+        document.getElementById("port").addEventListener("change", (event) => {
+            selectedPort = event.target.value;
+        });
+
+        // Intervalo para verificar el estado del puerto
+        setInterval(async () => {
+            if (!selectedPort) return; // No hacer nada si no se ha seleccionado un puerto
+
+            try {
+                const response = await fetch('/check_port_status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ port: selectedPort })
+                });
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    const statusLabel = document.getElementById("port-status");
+                    if (data.connected) {
+                        statusLabel.textContent = "Conectado";
+                        statusLabel.style.color = "green";
+                    } else {
+                        statusLabel.textContent = "Desconectado";
+                        statusLabel.style.color = "red";
+                        location.reload();
+                    }
+                } else {
+                    console.error("Error al verificar estado del puerto:", data.message);
+                }
+            } catch (error) {
+                console.error("Error al realizar la solicitud:", error);
+            }
+        }, 5000);
+
     </script>
 </body>
 

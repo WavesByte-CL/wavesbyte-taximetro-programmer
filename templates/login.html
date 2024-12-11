@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar Sesión</title>
+    <title>Cibtron WB-001</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Enlace a Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -21,17 +23,36 @@
         }
 
         .container {
-            max-width: 400px;
+            max-width: 800px;
+            max-height: 800px;
             padding: 30px;
             background-color: #fff;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
+
+
+
+        .container img {
+            margin: 2px 0;
+            /* Añade espacio alrededor del logo */
+        }
+
 
         .container h1 {
             text-align: center;
-            margin-bottom: 30px;
             font-weight: 700;
+        }
+
+        .container h2 {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 10px;
         }
 
         .form-group label {
@@ -68,25 +89,53 @@
                 font-size: 1.5rem;
             }
         }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            /* Opcional: color de fondo */
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            /* Espaciado entre el logo y el título */
+        }
+
+        .logo-title img {
+            display: block;
+            /* Asegura que el logo no tenga espacio extra alrededor */
+        }
     </style>
 </head>
+
+
+
 <body>
     <div class="container">
+        <img src="{{ url_for('static', filename='images/logo2.svg') }}" alt="Logo de WavesByte" width="100" height="100">
         <h1>Iniciar Sesión</h1>
+        <h3>WavesByte</h3>
         <p id="errorMessage"></p>
         <div class="loading" id="loadingMessage">Procesando, por favor espera...</div>
         <form id="loginForm">
             <div class="form-group">
                 <label for="email">Correo Electrónico:</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="ejemplo@correo.com" required>
+                <input type="email" id="email" name="email" class="form-control" placeholder="ejemplo@correo.com"
+                    required>
             </div>
             <div class="form-group">
                 <label for="password">Contraseña:</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="********" required>
+                <input type="password" id="password" name="password" class="form-control" placeholder="********"
+                    required>
             </div>
             <button type="submit" class="btn btn-primary">Ingresar</button>
         </form>
     </div>
+
 
     <!-- Enlaces a jQuery y Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -149,4 +198,5 @@
         });
     </script>
 </body>
+
 </html>

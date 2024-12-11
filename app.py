@@ -9,23 +9,41 @@ from google.cloud import storage
 import threading
 import time
 import subprocess
-from datetime import datetime 
+from datetime import datetime
 from dotenv import load_dotenv
 from serial_reader import restart_and_get_value
+from eventlet.hubs import epolls, kqueue, selects
+from dns import dnssec, e164, namedict, tsigkeyring, update, version, zone
 
-load_dotenv()
+# Obtener el directorio base dinámico según el entorno
+def get_base_dir():
+    if getattr(sys, 'frozen', False):
+        # Si está empaquetado con PyInstaller
+        return sys._MEIPASS
+    else:
+        # Entorno de desarrollo
+        return os.path.dirname(os.path.abspath(__file__))
 
-# Ruta del archivo de credenciales SA
-SERVICE_ACCOUNT_PATH = "./credentials.json"
+BASE_DIR = get_base_dir()
+
+# Rutas ajustadas
+SERVICE_ACCOUNT_PATH = os.path.join(BASE_DIR, "credentials.json")
+TEMP_BIN_PATH = os.path.join(BASE_DIR, "firmware.bin")
+DOTENV_PATH = os.path.join(BASE_DIR, ".env")
+
+# Cargar variables de entorno desde el archivo .env
+load_dotenv(DOTENV_PATH)
+
+# Obtener clave de Firebase
 FIREBASE_API_KEY = os.getenv("FIREBASE_API_KEY")
-
-# Definir ruta temporal para el binario
-TEMP_BIN_PATH = "./firmware.bin"
 
 numero_serial = None
 
 # Inicializar Firebase Admin
 try:
+    if not os.path.isfile(SERVICE_ACCOUNT_PATH):
+        raise FileNotFoundError(f"Archivo de credenciales no encontrado: {SERVICE_ACCOUNT_PATH}")
+
     print("Inicializando Firebase Admin...")
     cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
     initialize_app(cred)
@@ -34,7 +52,7 @@ except ValueError as e:
     print("Firebase Admin ya estaba inicializado:", e)
 except Exception as e:
     print(f"Error al inicializar Firebase Admin: {e}")
-    exit(1)
+    sys.exit(1)
 
 # Obtener cliente Firestore
 try:
@@ -42,11 +60,12 @@ try:
     print("Cliente Firestore obtenido correctamente.")
 except Exception as e:
     print(f"Error al obtener cliente Firestore: {e}")
-    exit(1)
+    sys.exit(1)
 
 # Inicializar Flask y Socket.IO
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True)
+
 
 # Detectar los puertos disponibles
 def list_serial_ports():
@@ -62,69 +81,6 @@ def list_serial_ports():
     except Exception as e:
         print(f"Error al listar puertos: {e}")
         return []
-
-# Emitir periódicamente los puertos disponibles al cliente
-def emit_ports_periodically():
-    global numero_serial
-    detected_ports = {}  # Diccionario para rastrear puertos y su información
-    retry_interval = 5   # Intervalo para reintentar obtener serial en segundos
-
-    while True:
-        try:
-            # Escanear los puertos disponibles
-            ports = list_serial_ports()
-            current_ports = {port['device']: port for port in ports}
-
-            # Emitir la lista de puertos al cliente
-            socketio.emit('update_ports', ports)
-
-            # Agregar nuevos puertos al diccionario
-            for port in current_ports.keys():
-                if port not in detected_ports:
-                    print(f"Nuevo puerto detectado: {port}")
-                    # Guardamos la última vez que intentamos leer el serial (0 indica que aún no)
-                    detected_ports[port] = {
-                        "last_attempt": 0,
-                        "serial": None
-                    }
-
-            # Intentar leer el número serial para cada puerto que aún no lo tenga
-            # y que haya pasado el intervalo de reintento.
-            current_time = time.time()
-            for port, info in list(detected_ports.items()):
-                if info["serial"] is None:
-                    # Verificar si podemos intentar ahora (pasó el intervalo desde el último intento)
-                    if current_time - info["last_attempt"] >= retry_interval:
-                        try:
-                            print(f"Intentando leer número serial en el puerto {port}...")
-                            numero_serial = restart_and_get_value(port, 115200, 2, keyword="NUMERO_SERIAL")
-                            detected_ports[port]["last_attempt"] = time.time()
-
-                            if numero_serial:
-                                print(f"Número serial detectado en {port}: {numero_serial}")
-                                detected_ports[port]["serial"] = numero_serial
-                                # Emitir el número serial al cliente
-                                socketio.emit('serial_detected', {"port": port, "serial": numero_serial})
-                                # Una vez detectado, ya no necesitamos reintentar
-                                # Podrías decidir si eliminar el puerto del diccionario o mantenerlo con el serial detectado
-                                # En este ejemplo, lo mantenemos con su serial para saber que ya fue encontrado
-                            else:
-                                print(f"No se encontró número serial en el puerto {port}. Reintentaremos en {retry_interval} segundos.")
-                        except Exception as e:
-                            print(f"Error al leer el número serial en el puerto {port}: {e}")
-                            # Actualizamos el último intento para reintentar más tarde
-                            detected_ports[port]["last_attempt"] = time.time()
-
-            # Limpiar puertos desconectados
-            disconnected_ports = set(detected_ports.keys()) - set(current_ports.keys())
-            for disconnected_port in disconnected_ports:
-                print(f"Puerto desconectado: {disconnected_port}")
-                del detected_ports[disconnected_port]
-
-        except Exception as e:
-            print(f"Error al emitir puertos: {e}")
-
-        time.sleep(2)  # Esperar antes de volver a escanear
 
 
 # Descargar el binario desde Google Cloud Storage
@@ -192,8 +148,9 @@ def verify_token(token):
         return None
 
 # Escuchar cambios en Firestore
+@app.route('/listen_to_job_status', methods=['POST'])
 def listen_to_job_status(user, uuid, port):
-    fecha = datetime.utcnow().strftime("%Y-%m-%d")  # Obtener la fecha actual en formato YYYY-MM-DD
+    global numero_serial
     document_path = f"logs/{numero_serial}/{user}/{uuid}"
     print(f"Escuchando logs en: {document_path}")
 
@@ -227,6 +184,7 @@ def listen_to_job_status(user, uuid, port):
     doc_ref.on_snapshot(on_snapshot)
 
 # Programar el ESP32 usando esptool
+@app.route('/program_esp32', methods=['POST'])
 def program_esp32(port, baud_rate="115200"):
     try:
         if not os.path.isfile(TEMP_BIN_PATH):
@@ -321,17 +279,122 @@ def execute_and_program():
         if not port:
             return jsonify({"status": "error", "message": "Debe seleccionar un puerto antes de ejecutar el trabajo."})
 
-        socketio.emit('log_update', {"status": "Ejecutando Cloud Run Job..."})
+        socketio.emit('log_update', {"status": "Compilando WavesByte Cibtron WB-001..."})
         run_cloud_run_job_with_env(project_id, region, job_name, parameters, args)
-
         listen_to_job_status(user, uuid_val, port)
-
+        socketio.emit('log_update', {"status": "Programando WavesByte Cibtron WB-001..."})
         return jsonify({"status": "success", "message": "Cloud Run Job iniciado y monitoreando Firebase."})
     except Exception as e:
         error_message = f"Error al ejecutar el trabajo: {str(e)}"
         print(error_message)
         return jsonify({"status": "error", "message": error_message})
 
+@app.route('/search_serial', methods=['GET'])
+def search_serial():
+    global numero_serial
+    serial_number = request.args.get('serial_number')
+    if not serial_number:
+        return jsonify({"status": "error", "message": "Número serial no proporcionado."}), 400
+
+    try:
+        # Reutilizamos la función `get_most_recent_document_by_serial`
+        from lector_firestore import get_most_recent_document_by_serial
+        result = get_most_recent_document_by_serial(serial_number)
+        numero_serial = serial_number
+        if result:
+            return jsonify({"status": "success", "data": result})
+        else:
+            return jsonify({"status": "error", "message": "No se encontró información para este número serial."}), 404
+    except Exception as e:
+        print(f"Error al buscar número serial: {e}")
+        return jsonify({"status": "error", "message": f"Error interno: {str(e)}"}), 500
+
+
+@app.route('/search_certificates', methods=['GET'])
+def search_certificates():
+    serial_number = request.args.get('serial_number')
+    if not serial_number:
+        return jsonify({"status": "error", "message": "Número serial no proporcionado."}), 400
+
+    try:
+        from lector_firestore2 import get_all_documents_by_serial
+        print(f"Buscando certificados para el número serial: {serial_number}")
+        
+        result = get_all_documents_by_serial(serial_number)
+        print(f"Resultados obtenidos: {result}")
+
+        if result:
+            return jsonify({"status": "success", "data": result})
+        else:
+            return jsonify({"status": "success", "data": []})  # Devolver un array vacío si no hay documentos
+    except Exception as e:
+        print(f"Error al buscar certificados: {e}")
+        return jsonify({"status": "error", "message": f"Error interno: {str(e)}"}), 500
+
+
+@app.route('/get_ports', methods=['GET'])
+def get_ports():
+    try:
+        ports = list_serial_ports()
+        ids_conocidos = ["1A86:7523", "10C4:EA60", "0403:6001"]
+        current_ports = [
+            {"device": port["device"], "description": port["description"], "hwid": port["hwid"]}
+            for port in ports
+            if any(id_conocido in port["hwid"] for id_conocido in ids_conocidos)
+        ]
+        return jsonify({"status": "success", "ports": current_ports})
+    except Exception as e:
+        print(f"Error al obtener los puertos: {e}")
+        return jsonify({"status": "error", "message": str(e)})
+
+
+@app.route('/get_serial_number', methods=['POST'])
+def get_serial_number():
+    data = request.json
+    port = data.get("port")
+    
+    if not port:
+        return jsonify({"status": "error", "message": "Puerto no proporcionado."}), 400
+
+    try:
+        # Configuración de la comunicación serial
+        BAUDRATE = 115200
+        TIMEOUT = 5  # Aumenta el tiempo de espera si es necesario
+
+        # Llamar a la función para obtener el número de serie
+        serial_number = restart_and_get_value(port, BAUDRATE, TIMEOUT)
+
+        if serial_number:
+            return jsonify({"status": "success", "serial_number": serial_number})
+        else:
+            return jsonify({"status": "error", "message": "No se pudo obtener el número de serie."}), 404
+    except Exception as e:
+        print(f"Error al obtener el número de serie: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route('/check_port_status', methods=['POST'])
+def check_port_status():
+    data = request.json
+    port = data.get("port")
+    
+    if not port:
+        return jsonify({"status": "error", "message": "Puerto no proporcionado."}), 400
+
+    try:
+        ports = list_serial_ports()
+        port_devices = [p["device"] for p in ports]
+
+        if port in port_devices:
+            return jsonify({"status": "success", "connected": True})
+        else:
+            return jsonify({"status": "success", "connected": False})
+    except Exception as e:
+        print(f"Error al verificar el puerto: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
 if __name__ == '__main__':
-    threading.Thread(target=emit_ports_periodically, daemon=True).start()
-    socketio.run(app, debug=True)
+    socketio.run(app, host="127.0.0.1", port=5000, debug=False, allow_unsafe_werkzeug=True)
+
+
