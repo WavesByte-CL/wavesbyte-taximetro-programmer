@@ -1,4 +1,20 @@
 /* styles.css */
+ 
+.form-section {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.form-section legend {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding: 0 5px;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+}
 
 body {
   font-family: "Lato", sans-serif;

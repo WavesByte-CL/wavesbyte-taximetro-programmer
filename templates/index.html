@@ -1,5 +1,3 @@
-<!-- index.html -->
-
 <!DOCTYPE html>
 <html lang="es">
   <head>
@@ -71,9 +69,11 @@
     </div>
 
     <div class="container">
-      <h2>Configuración del Taxímetro Cibtron WB-001</h2>
+      <h2 class="text-center mb-4">Configuración del Taxímetro Cibtron WB-001</h2>
 
-      <div style="display: flex; justify-content: center; align-items: center">
+      <div
+        class="d-flex justify-content-center align-items-center mb-3"
+      >
         <div>
           <label>Estado del Puerto:</label>
           <span id="port-status" style="font-weight: bold; color: gray"
@@ -83,456 +83,368 @@
       </div>
 
       <form id="jobForm" onsubmit="executeAndProgram(event)">
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="port">Estado del taxímetro:</label>
-            <div class="input-group">
-              <select id="port" name="port" class="form-control" required>
-                <option value="" disabled selected>
-                  Esperando detección...
-                </option>
-              </select>
-              <div class="input-group-append">
-                <button
-                  id="updatePortsBtn"
-                  class="btn btn-outline-secondary"
-                  type="button"
-                >
-                  Actualizar
-                </button>
-              </div>
+        <fieldset class="form-section">
+            <legend>Información del Dispositivo</legend>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="port">Estado del taxímetro:</label>
+                    <div class="input-group">
+                      <select id="port" name="port" class="form-control" required>
+                        <option value="" disabled selected>
+                          Esperando detección...
+                        </option>
+                      </select>
+                      <div class="input-group-append">
+                        <button
+                          id="updatePortsBtn"
+                          class="btn btn-outline-secondary"
+                          type="button"
+                        >
+                          Actualizar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                   <div class="form-group col-md-6">
+                        <label for="NUMERO_SERIAL">NÚMERO SERIAL:</label>
+                        <div class="input-group">
+                            <input
+                              type="text"
+                              id="NUMERO_SERIAL"
+                              name="NUMERO_SERIAL"
+                              class="form-control"
+                              title="Es el número serial del taxímetro"
+                              readonly
+                              required
+                            />
+                            <div class="input-group-append">
+                                <button
+                                    id="searchSerialBtn"
+                                    class="btn btn-primary"
+                                    type="button"
+                                >
+                                    Rellenar Formulario
+                                </button>
+                                <button
+                                    id="searchCertificateBtn"
+                                    class="btn btn-info ml-2"
+                                    type="button"
+                                >
+                                    Buscar Programaciones
+                                </button>
+                            </div>
+                        </div>
+                    </div>
             </div>
-          </div>
-          <div class="form-group col-md-6">
-            <label for="USER">Usuario:</label>
-            <input
-              type="text"
-              id="USER"
-              name="USER"
-              class="form-control"
-              readonly
-              required
-            />
-          </div>
-
-          <div class="form-group col-md-6">
-            <label for="UUID">UUID:</label>
-            <input
-              type="text"
-              id="UUID"
-              name="UUID"
-              class="form-control"
-              readonly
-              required
-            />
-          </div>
-        </div>
-
-        <input
-          type="text"
-          id="MARCA_TAXIMETRO"
-          name="MARCA_TAXIMETRO"
-          required
-          readonly
-        />
-
-        <input
-          type="text"
-          id="MODELO_TAXIMETRO"
-          name="MODELO_TAXIMETRO"
-          required
-          readonly
-        />
-
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="NUMERO_SERIAL">NÚMERO SERIAL:</label>
-            <div class="input-group">
-              <input
-                type="text"
-                id="NUMERO_SERIAL"
-                name="NUMERO_SERIAL"
-                class="form-control"
-                title="Es el número serial del taxímetro"
-                readonly
-                required
-              />
-              <div class="input-group-append">
-                <button
-                  id="searchSerialBtn"
-                  class="btn btn-outline-secondary"
-                  type="button"
-                >
-                  Rellenar Formulario
-                </button>
-                <button
-                  id="searchCertificateBtn"
-                  class="btn btn-primary ml-2"
-                  type="button"
-                >
-                  Buscar Programaciones
-                </button>
-              </div>
+             <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="USER">PROGRAMADOR:</label>
+                    <input type="text" id="USER" name="USER" class="form-control" readonly required />
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="UUID">UUID:</label>
+                    <input type="text" id="UUID" name="UUID" class="form-control" readonly required />
+                </div>
             </div>
-          </div>
+            <input type="text" id="MARCA_TAXIMETRO" name="MARCA_TAXIMETRO" required readonly style="display: none;"/>
+           <input type="text" id="MODELO_TAXIMETRO" name="MODELO_TAXIMETRO" required readonly style="display: none;"/>
+        </fieldset>
 
-          <div class="form-group col-md-6">
-            <label for="NUMERO_SELLO">NÚMERO DE SELLO:</label>
-            <input
-              type="text"
-              id="NUMERO_SELLO"
-              name="NUMERO_SELLO"
-              class="form-control"
-              pattern="^\d+$"
-              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-              title="Solo se permiten números"
-              placeholder="Ejemplo: 1"
-              required
-            />
-          </div>
+        <fieldset class="form-section">
+            <legend>Información del Propietario</legend>
+             <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="NUMERO_SELLO">NÚMERO DE SELLO:</label>
+                    <input
+                      type="text"
+                      id="NUMERO_SELLO"
+                      name="NUMERO_SELLO"
+                      class="form-control"
+                      pattern="^\d+$"
+                      oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                      title="Solo se permiten números"
+                      placeholder="Ejemplo: 1"
+                      required
+                    />
+                  </div>
+                    <div class="form-group col-md-6">
+                        <label for="NOMBRE_PROPIETARIO">NOMBRE DEL PROPIETARIO:</label>
+                        <input type="text" id="NOMBRE_PROPIETARIO" name="NOMBRE_PROPIETARIO" class="form-control"
+                            pattern="^[A-ZÑ ]+$" oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑ ]/g, '')"
+                            title="Solo letras mayúsculas" placeholder="Ejemplo: JUAN" required />
+                    </div>
+             </div>
+             <div class="form-row">
+                  <div class="form-group col-md-6">
+                        <label for="APELLIDO_PROPIETARIO">APELLIDO DEL PROPIETARIO:</label>
+                        <input type="text" id="APELLIDO_PROPIETARIO" name="APELLIDO_PROPIETARIO" class="form-control"
+                            pattern="^[A-ZÑ ]+$" oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑ ]/g, '')"
+                            title="Solo letras mayúsculas" placeholder="Ejemplo: PEREZ" required />
+                    </div>
 
-          <div class="form-group col-md-6">
-            <label for="NOMBRE_PROPIETARIO">NOMBRE DEL PROPIETARIO:</label>
-            <input
-              type="text"
-              id="NOMBRE_PROPIETARIO"
-              name="NOMBRE_PROPIETARIO"
-              class="form-control"
-              pattern="^[A-ZÑ ]+$"
-              oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑ ]/g, '')"
-              title="Solo letras mayúsculas"
-              placeholder="Ejemplo: JUAN"
-              required
-            />
-          </div>
+                   <div class="form-group col-md-6">
+                        <label for="MARCA_VEHICULO">MARCA DEL VEHICULO:</label>
+                         <input
+                            type="text"
+                            id="MARCA_VEHICULO"
+                            name="MARCA_VEHICULO"
+                            class="form-control"
+                            pattern="^[A-ZÑ ]+$"
+                            oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑ ]/g, '')"
+                            title="Solo letras mayúsculas"
+                            placeholder="Ejemplo: NISSAN"
+                            required
+                        />
+                    </div>
+            </div>
+             <div class="form-row">
+                 <div class="form-group col-md-6">
+                        <label for="YEAR_VEHICULO">AÑO DEL VEHICULO:</label>
+                       <input
+                          type="text"
+                          id="YEAR_VEHICULO"
+                          name="YEAR_VEHICULO"
+                          class="form-control"
+                          pattern="^\d{4}$"
+                          maxlength="4"
+                          oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                          title="Solo se permiten números de 4 dígitos"
+                          placeholder="Ejemplo: 2020"
+                          required
+                        />
+                    </div>
+                  <div class="form-group col-md-6">
+                    <label for="PATENTE">PATENTE (AAAA-00 o AA00-00):</label>
+                     <input
+                          type="text"
+                          id="PATENTE"
+                          name="PATENTE"
+                          class="form-control"
+                          pattern="^([A-Z]{4}-\d{2}|[A-Z]{2}\d{2}-\d{2})$"
+                           title="Debe cumplir con el formato AAAA-00 o AA00-00"
+                          placeholder="Ejemplo: ABCD-12 o AB12-34"
+                           required
+                        />
+                    </div>
+             </div>
+        </fieldset>
 
-          <div class="form-group col-md-6">
-            <label for="APELLIDO_PROPIETARIO">APELLIDO DEL PROPIETARIO:</label>
-            <input
-              type="text"
-              id="APELLIDO_PROPIETARIO"
-              name="APELLIDO_PROPIETARIO"
-              class="form-control"
-              pattern="^[A-ZÑ ]+$"
-              oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑ ]/g, '')"
-              title="Solo letras mayúsculas"
-              placeholder="Ejemplo: PEREZ"
-              required
-            />
-          </div>
+        <fieldset class="form-section">
+             <legend>Configuración de Tarifas</legend>
+               <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="RESOLUCION">RESOLUCIÓN (decimal):</label>
+                        <input
+                          type="number"
+                          id="RESOLUCION"
+                          name="RESOLUCION"
+                          class="form-control"
+                          step="any"
+                          min="0"
+                           placeholder="Ejemplo: 1500.45"
+                          required
+                        />
+                    </div>
+                    <div class="form-group col-md-6">
+                    <label for="CANTIDAD_PULSOS">DIVISOR PULSOS:</label>
+                         <input
+                          type="number"
+                          id="CANTIDAD_PULSOS"
+                          name="CANTIDAD_PULSOS"
+                          class="form-control"
+                            step="any"
+                            min="0"
+                             placeholder="Ejemplo: 1"
+                          required
+                        />
+                    </div>
+              </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="TARIFA_INICIAL">TARIFA INICIAL:</label>
+                    <input type="number" id="TARIFA_INICIAL" name="TARIFA_INICIAL" class="form-control"
+                        min="0" step="any" placeholder="Ejemplo: 450" required />
+                </div>
+                 <div class="form-group col-md-4">
+                    <label for="TARIFA_CAIDA_PARCIAL_METROS"
+                        >PRECIO CAÍDA METROS:</label>
+                    <input type="number" id="TARIFA_CAIDA_PARCIAL_METROS"
+                        name="TARIFA_CAIDA_PARCIAL_METROS" class="form-control" min="0" step="any"
+                        placeholder="Ejemplo: 200" required />
+                </div>
+                  <div class="form-group col-md-4">
+                    <label for="TARIFA_CAIDA_PARCIAL_MINUTO"
+                        >PRECIO CAÍDA MINUTO:</label>
+                    <input type="number" id="TARIFA_CAIDA_PARCIAL_MINUTO"
+                        name="TARIFA_CAIDA_PARCIAL_MINUTO" class="form-control" min="0" step="any"
+                        placeholder="Ejemplo: 200" required />
+                </div>
+            </div>
+        </fieldset>
 
-          <div class="form-group col-md-6">
-            <label for="MARCA_VEHICULO">MARCA DEL VEHICULO:</label>
-            <input
-              type="text"
-              id="MARCA_VEHICULO"
-              name="MARCA_VEHICULO"
-              class="form-control"
-              pattern="^[A-ZÑ ]+$"
-              oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑ ]/g, '')"
-              title="Solo letras mayúsculas"
-              placeholder="Ejemplo: NISSAN"
-              required
-            />
-          </div>
+        <fieldset class="form-section">
+            <legend>Configuración de Pantalla</legend>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="MOSTRAR_VELOCIDAD_EN_PANTALLA"
+                        >MOSTRAR METROS EN PANTALLA:</label
+                    >
+                     <select
+                      id="MOSTRAR_VELOCIDAD_EN_PANTALLA"
+                      name="MOSTRAR_VELOCIDAD_EN_PANTALLA"
+                      class="form-control"
+                      required
+                    >
+                      <option value="false">No</option>
+                      <option value="true">Sí</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="COLOR_FONDO_PANTALLA">COLOR DE FONDO:</label>
+                    <select id="COLOR_FONDO_PANTALLA" name="COLOR_FONDO_PANTALLA" class="form-control" required>
+                         <option value="TFT_BLACK">Negro</option>
+                         <option value="TFT_YELLOW">Amarillo</option>
+                         <option value="TFT_WHITE">Blanco</option>
+                         <option value="TFT_NAVY">Azul oscuro</option>
+                         <option value="TFT_DARKGREEN">Verde oscuro</option>
+                         <option value="TFT_DARKCYAN">Cian oscuro</option>
+                         <option value="TFT_MAROON">Granate</option>
+                         <option value="TFT_PURPLE">Púrpura</option>
+                         <option value="TFT_OLIVE">Oliva</option>
+                         <option value="TFT_LIGHTGREY">Gris claro</option>
+                         <option value="TFT_DARKGREY">Gris oscuro</option>
+                         <option value="TFT_BLUE">Azul</option>
+                         <option value="TFT_GREEN">Verde</option>
+                         <option value="TFT_CYAN">Cian</option>
+                         <option value="TFT_RED">Rojo</option>
+                         <option value="TFT_MAGENTA">Magenta</option>
+                         <option value="TFT_ORANGE">Naranja</option>
+                         <option value="TFT_GREENYELLOW">Verde amarillento</option>
+                         <option value="TFT_PINK">Rosa</option>
+                         <option value="TFT_BROWN">Marrón</option>
+                         <option value="TFT_GOLD">Oro</option>
+                         <option value="TFT_SILVER">Plata</option>
+                         <option value="TFT_SKYBLUE">Azul cielo</option>
+                          <option value="TFT_VIOLET">Violeta</option>
+                    </select>
+                </div>
+            </div>
+             <div class="form-row">
+                 <div class="form-group col-md-6">
+                   <label for="COLOR_LETRAS_PANTALLA">COLOR DE LETRAS:</label>
+                      <select
+                      id="COLOR_LETRAS_PANTALLA"
+                      name="COLOR_LETRAS_PANTALLA"
+                      class="form-control"
+                      required
+                    >
+                         <option value="TFT_YELLOW">Amarillo</option>
+                         <option value="TFT_BLACK">Negro</option>
+                         <option value="TFT_WHITE">Blanco</option>
+                         <option value="TFT_NAVY">Azul oscuro</option>
+                         <option value="TFT_DARKGREEN">Verde oscuro</option>
+                         <option value="TFT_DARKCYAN">Cian oscuro</option>
+                         <option value="TFT_MAROON">Granate</option>
+                         <option value="TFT_PURPLE">Púrpura</option>
+                         <option value="TFT_OLIVE">Oliva</option>
+                         <option value="TFT_LIGHTGREY">Gris claro</option>
+                         <option value="TFT_DARKGREY">Gris oscuro</option>
+                         <option value="TFT_BLUE">Azul</option>
+                         <option value="TFT_GREEN">Verde</option>
+                         <option value="TFT_CYAN">Cian</option>
+                         <option value="TFT_RED">Rojo</option>
+                         <option value="TFT_MAGENTA">Magenta</option>
+                         <option value="TFT_ORANGE">Naranja</option>
+                         <option value="TFT_GREENYELLOW">Verde amarillento</option>
+                         <option value="TFT_PINK">Rosa</option>
+                          <option value="TFT_BROWN">Marrón</option>
+                          <option value="TFT_GOLD">Oro</option>
+                          <option value="TFT_SILVER">Plata</option>
+                          <option value="TFT_SKYBLUE">Azul cielo</option>
+                           <option value="TFT_VIOLET">Violeta</option>
+                    </select>
+                  </div>
+                <div class="form-group col-md-6">
+                    <label for="COLOR_PRECIO_PANTALLA">COLOR DE PRECIO:</label>
+                   <select
+                      id="COLOR_PRECIO_PANTALLA"
+                      name="COLOR_PRECIO_PANTALLA"
+                      class="form-control"
+                      required
+                    >
+                        <option value="TFT_WHITE">Blanco</option>
+                         <option value="TFT_BLACK">Negro</option>
+                         <option value="TFT_YELLOW">Amarillo</option>
+                         <option value="TFT_NAVY">Azul oscuro</option>
+                         <option value="TFT_DARKGREEN">Verde oscuro</option>
+                         <option value="TFT_DARKCYAN">Cian oscuro</option>
+                         <option value="TFT_MAROON">Granate</option>
+                         <option value="TFT_PURPLE">Púrpura</option>
+                         <option value="TFT_OLIVE">Oliva</option>
+                         <option value="TFT_LIGHTGREY">Gris claro</option>
+                         <option value="TFT_DARKGREY">Gris oscuro</option>
+                         <option value="TFT_BLUE">Azul</option>
+                         <option value="TFT_GREEN">Verde</option>
+                         <option value="TFT_CYAN">Cian</option>
+                         <option value="TFT_RED">Rojo</option>
+                         <option value="TFT_MAGENTA">Magenta</option>
+                         <option value="TFT_ORANGE">Naranja</option>
+                         <option value="TFT_GREENYELLOW">Verde amarillento</option>
+                         <option value="TFT_PINK">Rosa</option>
+                          <option value="TFT_BROWN">Marrón</option>
+                         <option value="TFT_GOLD">Oro</option>
+                         <option value="TFT_SILVER">Plata</option>
+                         <option value="TFT_SKYBLUE">Azul cielo</option>
+                          <option value="TFT_VIOLET">Violeta</option>
+                    </select>
+                </div>
+            </div>
+        </fieldset>
 
-          <div class="form-group col-md-6">
-            <label for="YEAR_VEHICULO">AÑO DEL VEHICULO:</label>
-            <input
-              type="text"
-              id="YEAR_VEHICULO"
-              name="YEAR_VEHICULO"
-              class="form-control"
-              pattern="^\d{4}$"
-              maxlength="4"
-              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-              title="Solo se permiten números de 4 dígitos"
-              placeholder="Ejemplo: 2020"
-              required
-            />
-          </div>
+        <fieldset class="form-section">
+            <legend>Mensajes de Propaganda</legend>
+             <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="PROPAGANDA_1">PROPAGANDA 1:</label>
+                    <input type="text" id="PROPAGANDA_1" name="PROPAGANDA_1" class="form-control"
+                        maxlength="20" placeholder="Máx. 20 caracteres" required />
+                </div>
+                 <div class="form-group col-md-6">
+                    <label for="PROPAGANDA_2">PROPAGANDA 2:</label>
+                    <input type="text" id="PROPAGANDA_2" name="PROPAGANDA_2" class="form-control"
+                       maxlength="20" placeholder="Máx. 20 caracteres" required />
+                </div>
+             </div>
+               <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="PROPAGANDA_3">PROPAGANDA 3:</label>
+                        <input type="text" id="PROPAGANDA_3" name="PROPAGANDA_3" class="form-control"
+                           maxlength="20" placeholder="Máx. 20 caracteres" required />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="PROPAGANDA_4">PROPAGANDA 4:</label>
+                        <input type="text" id="PROPAGANDA_4" name="PROPAGANDA_4" class="form-control"
+                          maxlength="20" placeholder="Máx. 20 caracteres" required />
+                    </div>
+               </div>
+        </fieldset>
 
-          <div class="form-group col-md-6">
-            <label for="PATENTE">PATENTE (AAAA-00 o AA00-00):</label>
-            <input
-              type="text"
-              id="PATENTE"
-              name="PATENTE"
-              class="form-control"
-              pattern="^([A-Z]{4}-\d{2}|[A-Z]{2}\d{2}-\d{2})$"
-              title="Debe cumplir con el formato AAAA-00 o AA00-00"
-              placeholder="Ejemplo: ABCD-12 o AB12-34"
-              required
-            />
-          </div>
-          <div class="form-group col-md-6">
-            <label for="RESOLUCION">RESOLUCIÓN (decimal):</label>
-            <input
-              type="number"
-              id="RESOLUCION"
-              name="RESOLUCION"
-              class="form-control"
-              step="any"
-              min="0"
-              placeholder="Ejemplo: 1500.45"
-              required
-            />
-          </div>
-          <div class="form-group col-md-6">
-            <label for="CANTIDAD_PULSOS">DIVISOR PULSOS:</label>
-            <input
-              type="number"
-              id="CANTIDAD_PULSOS"
-              name="CANTIDAD_PULSOS"
-              class="form-control"
-              step="any"
-              min="0"
-              placeholder="Ejemplo: 1"
-              required
-            />
-          </div>
-        </div>
 
-        <div class="form-row">
-          <div class="form-group col-md-4">
-            <label for="TARIFA_INICIAL">TARIFA INICIAL:</label>
-            <input
-              type="number"
-              id="TARIFA_INICIAL"
-              name="TARIFA_INICIAL"
-              class="form-control"
-              min="0"
-              step="any"
-              placeholder="Ejemplo: 450"
-              required
-            />
-          </div>
-          <div class="form-group col-md-4">
-            <label for="TARIFA_CAIDA_PARCIAL_METROS"
-              >PRECIO CAÍDA METROS:</label
-            >
-            <input
-              type="number"
-              id="TARIFA_CAIDA_PARCIAL_METROS"
-              name="TARIFA_CAIDA_PARCIAL_METROS"
-              class="form-control"
-              min="0"
-              step="any"
-              placeholder="Ejemplo: 200"
-              required
-            />
-          </div>
-          <div class="form-group col-md-4">
-            <label for="TARIFA_CAIDA_PARCIAL_MINUTO"
-              >PRECIO CAÍDA MINUTO:</label
-            >
-            <input
-              type="number"
-              id="TARIFA_CAIDA_PARCIAL_MINUTO"
-              name="TARIFA_CAIDA_PARCIAL_MINUTO"
-              class="form-control"
-              min="0"
-              step="any"
-              placeholder="Ejemplo: 200"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="MOSTRAR_VELOCIDAD_EN_PANTALLA"
-              >MOSTRAR METROS EN PANTALLA:</label
-            >
-            <select
-              id="MOSTRAR_VELOCIDAD_EN_PANTALLA"
-              name="MOSTRAR_VELOCIDAD_EN_PANTALLA"
-              class="form-control"
-              required
-            >
-              <option value="false">No</option>
-              <option value="true">Sí</option>
-            </select>
-          </div>
-          <div class="form-group col-md-6">
-            <label for="COLOR_FONDO_PANTALLA">COLOR DE FONDO:</label>
-            <select
-              id="COLOR_FONDO_PANTALLA"
-              name="COLOR_FONDO_PANTALLA"
-              class="form-control"
-              required
-            >
-              <option value="TFT_BLACK">Negro</option>
-              <option value="TFT_YELLOW">Amarillo</option>
-              <option value="TFT_WHITE">Blanco</option>
-              <option value="TFT_NAVY">Azul oscuro</option>
-              <option value="TFT_DARKGREEN">Verde oscuro</option>
-              <option value="TFT_DARKCYAN">Cian oscuro</option>
-              <option value="TFT_MAROON">Granate</option>
-              <option value="TFT_PURPLE">Púrpura</option>
-              <option value="TFT_OLIVE">Oliva</option>
-              <option value="TFT_LIGHTGREY">Gris claro</option>
-              <option value="TFT_DARKGREY">Gris oscuro</option>
-              <option value="TFT_BLUE">Azul</option>
-              <option value="TFT_GREEN">Verde</option>
-              <option value="TFT_CYAN">Cian</option>
-              <option value="TFT_RED">Rojo</option>
-              <option value="TFT_MAGENTA">Magenta</option>
-              <option value="TFT_ORANGE">Naranja</option>
-              <option value="TFT_GREENYELLOW">Verde amarillento</option>
-              <option value="TFT_PINK">Rosa</option>
-              <option value="TFT_BROWN">Marrón</option>
-              <option value="TFT_GOLD">Oro</option>
-              <option value="TFT_SILVER">Plata</option>
-              <option value="TFT_SKYBLUE">Azul cielo</option>
-              <option value="TFT_VIOLET">Violeta</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="COLOR_LETRAS_PANTALLA">COLOR DE LETRAS:</label>
-            <select
-              id="COLOR_LETRAS_PANTALLA"
-              name="COLOR_LETRAS_PANTALLA"
-              class="form-control"
-              required
-            >
-              <option value="TFT_YELLOW">Amarillo</option>
-              <option value="TFT_BLACK">Negro</option>
-              <option value="TFT_WHITE">Blanco</option>
-              <option value="TFT_NAVY">Azul oscuro</option>
-              <option value="TFT_DARKGREEN">Verde oscuro</option>
-              <option value="TFT_DARKCYAN">Cian oscuro</option>
-              <option value="TFT_MAROON">Granate</option>
-              <option value="TFT_PURPLE">Púrpura</option>
-              <option value="TFT_OLIVE">Oliva</option>
-              <option value="TFT_LIGHTGREY">Gris claro</option>
-              <option value="TFT_DARKGREY">Gris oscuro</option>
-              <option value="TFT_BLUE">Azul</option>
-              <option value="TFT_GREEN">Verde</option>
-              <option value="TFT_CYAN">Cian</option>
-              <option value="TFT_RED">Rojo</option>
-              <option value="TFT_MAGENTA">Magenta</option>
-              <option value="TFT_ORANGE">Naranja</option>
-              <option value="TFT_GREENYELLOW">Verde amarillento</option>
-              <option value="TFT_PINK">Rosa</option>
-              <option value="TFT_BROWN">Marrón</option>
-              <option value="TFT_GOLD">Oro</option>
-              <option value="TFT_SILVER">Plata</option>
-              <option value="TFT_SKYBLUE">Azul cielo</option>
-              <option value="TFT_VIOLET">Violeta</option>
-            </select>
-          </div>
-          <div class="form-group col-md-6">
-            <label for="COLOR_PRECIO_PANTALLA">COLOR DE PRECIO:</label>
-            <select
-              id="COLOR_PRECIO_PANTALLA"
-              name="COLOR_PRECIO_PANTALLA"
-              class="form-control"
-              required
-            >
-              <option value="TFT_WHITE">Blanco</option>
-              <option value="TFT_BLACK">Negro</option>
-              <option value="TFT_YELLOW">Amarillo</option>
-              <option value="TFT_NAVY">Azul oscuro</option>
-              <option value="TFT_DARKGREEN">Verde oscuro</option>
-              <option value="TFT_DARKCYAN">Cian oscuro</option>
-              <option value="TFT_MAROON">Granate</option>
-              <option value="TFT_PURPLE">Púrpura</option>
-              <option value="TFT_OLIVE">Oliva</option>
-              <option value="TFT_LIGHTGREY">Gris claro</option>
-              <option value="TFT_DARKGREY">Gris oscuro</option>
-              <option value="TFT_BLUE">Azul</option>
-              <option value="TFT_GREEN">Verde</option>
-              <option value="TFT_CYAN">Cian</option>
-              <option value="TFT_RED">Rojo</option>
-              <option value="TFT_MAGENTA">Magenta</option>
-              <option value="TFT_ORANGE">Naranja</option>
-              <option value="TFT_GREENYELLOW">Verde amarillento</option>
-              <option value="TFT_PINK">Rosa</option>
-              <option value="TFT_BROWN">Marrón</option>
-              <option value="TFT_GOLD">Oro</option>
-              <option value="TFT_SILVER">Plata</option>
-              <option value="TFT_SKYBLUE">Azul cielo</option>
-              <option value="TFT_VIOLET">Violeta</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="PROPAGANDA_1">PROPAGANDA 1:</label>
-            <input
-              type="text"
-              id="PROPAGANDA_1"
-              name="PROPAGANDA_1"
-              class="form-control"
-              maxlength="20"
-              placeholder="Máx. 20 caracteres"
-              required
-            />
-          </div>
-          <div class="form-group col-md-6">
-            <label for="PROPAGANDA_2">PROPAGANDA 2:</label>
-            <input
-              type="text"
-              id="PROPAGANDA_2"
-              name="PROPAGANDA_2"
-              class="form-control"
-              maxlength="20"
-              placeholder="Máx. 20 caracteres"
-              required
-            />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="PROPAGANDA_3">PROPAGANDA 3:</label>
-            <input
-              type="text"
-              id="PROPAGANDA_3"
-              name="PROPAGANDA_3"
-              class="form-control"
-              maxlength="20"
-              placeholder="Máx. 20 caracteres"
-              required
-            />
-          </div>
-          <div class="form-group col-md-6">
-            <label for="PROPAGANDA_4">PROPAGANDA 4:</label>
-            <input
-              type="text"
-              id="PROPAGANDA_4"
-              name="PROPAGANDA_4"
-              class="form-control"
-              maxlength="20"
-              placeholder="Máx. 20 caracteres"
-              required
-            />
-          </div>
-        </div>
-
-        <button
-          id="executeButton"
-          type="submit"
-          class="btn btn-primary btn-block"
-          disabled
-        >
-          Programar WavesByte Cibtron WB-001
+        <button id="executeButton" type="submit" class="btn btn-primary btn-block" disabled>
+            Programar WavesByte Cibtron WB-001
         </button>
-        <button
-          id="cancelButton"
-          type="button"
-          class="btn btn-danger"
-          style="display: none"
-        >
-          Cancelar
+        <button id="cancelButton" type="button" class="btn btn-danger" style="display: none">
+            Cancelar
         </button>
-      </form>
+    </form>
 
-      <div id="jobLogs"></div>
+
+    <div id="jobLogs"></div>
+
+      <div class="d-flex justify-content-center mt-3">
+          <button id="resetButton" class="btn btn-warning">Resetear Cibtron</button>
+     </div>
+
     </div>
 
     <footer>WavesByte ©</footer>
