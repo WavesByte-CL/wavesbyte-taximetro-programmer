@@ -1,0 +1,72 @@
+# -*- mode: python ; coding: utf-8 -*-
+import certifi
+
+a = Analysis(
+    ['app.py'],
+    pathex=[],
+    binaries=[],
+    datas=[
+        ('templates', 'templates'),
+        ('static', 'static'),
+        ('cibtron.txt', '.'),
+        ('.env', '.'),
+        ('esptool', 'esptool'),
+        ('lector_firestore.py', '.'),
+        ('lector_firestore2.py', '.'),
+        ('serial_reader.py', '.'),
+        ('resetcibtron.py', '.'),
+        ('leer_serial_memoria.ino.bin', '.'),
+        ('leer_serial_memoria.ino.bootloader.bin', '.'),
+        ('leer_serial_memoria.ino.partitions.bin', '.'),
+        ('logo.ico', '.'), # Utiliza el icono .ico
+        (certifi.where(), 'certifi')
+    ],
+    hiddenimports=[
+        'socketio',
+        'engineio',
+        'engineio.async_drivers.eventlet',
+        'flask_socketio',
+        'dns.versioned',
+        'dns.hash',
+        'dns.dnssec',
+        'dns.tsigkeyring',
+        'dns.namedict',
+        'dns.update',
+        'dns.zone',
+        'dns.asyncbackend',
+        'dns.e164',
+        'eventlet',
+        'gevent',
+        'grpc'
+    ],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    noarchive=False,
+    optimize=0,
+)
+pyz = PYZ(a.pure)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.datas,
+    [],
+    name='Programador WavesByte Cibtron WB-001',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=True,
+    onefile=True,
+    icon='./logo.ico', # Utiliza el icono .ico
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None, # Deja 'None' para la arquitectura de tu PC
+    codesign_identity=None,
+    entitlements_file=None,
+)

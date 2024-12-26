@@ -11,3 +11,5 @@ firebase_admin
 python-dotenv
 esp-idf-nvs-partition-gen
 pyinstaller
+eventlet
+google-cloud-run

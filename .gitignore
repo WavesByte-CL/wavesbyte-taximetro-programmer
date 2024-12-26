@@ -6,3 +6,5 @@ esptool/targets/__pycache__/
 __pycache__/
 esptool/__pycache__
 esptool/targets/__pycache__
+dist/
+build/

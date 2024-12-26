@@ -17,6 +17,59 @@ import eventlet
 from resetcibtron import resetcibtron
 import json
 import base64
+from google.oauth2 import service_account
+from google.auth.transport.requests import Request
+import requests
+
+def generate_access_token():
+    try:
+        # Cargar las credenciales de la cuenta de servicio
+        credentials = get_decoded_credentials()
+        creds = service_account.Credentials.from_service_account_info(credentials)
+
+        # Definir el scope (permisos) para Cloud Run Jobs
+        scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+
+        # Solicitar el token de acceso
+        request = Request()
+        creds = creds.with_scopes(scopes)
+        creds.refresh(request)
+
+        access_token = creds.token
+        return access_token
+    except Exception as e:
+        print(f"Error al generar el token de acceso: {e}")
+        return None
+
+def run_job_with_rest_api(project_id, region, job_name, parameters, args=None):
+    try:
+        access_token = generate_access_token()
+        if not access_token:
+            raise Exception("No se pudo obtener el token de acceso")
+
+        url = f"https://run.googleapis.com/v2/projects/{project_id}/locations/{region}/jobs/{job_name}:run"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+
+        data = {
+             "overrides": {
+               "containerOverrides": [{
+                     "env": [{"name": key, "value": value} for key, value in parameters.items()],
+                      "args": args
+                     }]
+               }
+             }
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()  # Lanza una excepción para errores HTTP
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error en la petición HTTP: {e}")
+        raise
+    except Exception as e:
+         print(f"Error al ejecutar el Cloud Run Job con el API REST: {e}")
+         raise
 
 def get_firestore_client():
     try:
@@ -350,7 +403,7 @@ def execute_and_program():
         return jsonify({"status": "error", "message": "Ya hay un trabajo en curso."})
 
     if numero_serial == "ERROR":
-      return jsonify({"status": "error", "message": "No se puede programar con un número de serie inválido."})
+        return jsonify({"status": "error", "message": "No se puede programar con un número de serie inválido."})
 
     try:
         is_programming = True
@@ -373,7 +426,7 @@ def execute_and_program():
             )
 
         emit_status_update("Compilando WavesByte Cibtron WB-001...")
-        run_cloud_run_job_with_env(project_id, region, job_name, parameters, args)
+        run_job_with_rest_api(project_id, region, job_name, parameters, args)
         monitor_thread = socketio.start_background_task(listen_to_job_status, user, uuid_val, port)
         return jsonify(
             {
@@ -386,7 +439,6 @@ def execute_and_program():
         print(error_message)
         reset_state()
         return jsonify({"status": "error", "message": error_message})
-
 
 @app.route("/search_serial", methods=["GET"])
 def search_serial():
@@ -534,8 +586,8 @@ def get_user_data():
 @app.route("/resetcibtron", methods=["POST"])
 def reset_cibtron_route():
     port = request.form.get("port")
-    firmware_path = get_resource_path("leer_serial_memoria.ino.bin")
-
+    firmware_path = os.path.join(BASE_DIR, "leer_serial_memoria.ino.bin")
+   
     if not port:
         return jsonify({"status": "error", "message": "Port no proporcionado"}), 400
 
@@ -550,5 +602,5 @@ def reset_cibtron_route():
 
 if __name__ == "__main__":
     socketio.run(
-        app, host="127.0.0.1", port=5000, debug=False, allow_unsafe_werkzeug=True
+        app, host="127.0.0.1", port=5001, debug=False, allow_unsafe_werkzeug=True
     )

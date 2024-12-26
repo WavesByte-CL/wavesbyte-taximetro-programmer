@@ -10,9 +10,14 @@ def resetcibtron(port, firmware_path, baud_rate=115200):
     :param baud_rate: Velocidad de transmisión (por defecto, 115200).
     :return: None
     """
+
     # Archivos asociados generados por Arduino IDE
     bootloader_path = firmware_path.replace(".ino.bin", ".ino.bootloader.bin")
     partitions_path = firmware_path.replace(".ino.bin", ".ino.partitions.bin")
+
+    print(firmware_path)
+    print(bootloader_path)
+    print(partitions_path)
 
     if not (os.path.exists(firmware_path) and os.path.exists(bootloader_path) and os.path.exists(partitions_path)):
         print(f"Error: No se encontraron todos los archivos necesarios.\n"
@@ -22,7 +27,7 @@ def resetcibtron(port, firmware_path, baud_rate=115200):
     try:
         # Comando completo para programar sin sobrescribir NVS
         command = [
-            "esptool.py",
+            "esptool",
             "--chip", "esp32",
             "--port", port,
             "--baud", str(baud_rate),
@@ -42,7 +47,7 @@ def resetcibtron(port, firmware_path, baud_rate=115200):
 
 if __name__ == "__main__":
     print("Probador de Programación ESP32 con configuración completa")
-    port = "/dev/cu.usbserial-2110"
+    port = "COM8"
     firmware_path = "leer_serial_memoria.ino.bin"
 
     try:
