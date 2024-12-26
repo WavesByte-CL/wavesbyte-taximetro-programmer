@@ -21,18 +21,18 @@ imports:
     <a href="#_collections_abc">_collections_abc</a>
  &#8226;   <a href="#_weakrefset">_weakrefset</a>
  &#8226;   <a href="#abc">abc</a>
+ &#8226;   <a href="#base64">base64</a>
  &#8226;   <a href="#codecs">codecs</a>
  &#8226;   <a href="#collections">collections</a>
  &#8226;   <a href="#collections.abc">collections.abc</a>
  &#8226;   <a href="#copyreg">copyreg</a>
  &#8226;   <a href="#datetime">datetime</a>
- &#8226;   <a href="#dns">dns</a>
+ &#8226;   <a href="#dns.asyncbackend">dns.asyncbackend</a>
  &#8226;   <a href="#dns.dnssec">dns.dnssec</a>
  &#8226;   <a href="#dns.e164">dns.e164</a>
  &#8226;   <a href="#dns.namedict">dns.namedict</a>
  &#8226;   <a href="#dns.tsigkeyring">dns.tsigkeyring</a>
  &#8226;   <a href="#dns.update">dns.update</a>
- &#8226;   <a href="#dns.version">dns.version</a>
  &#8226;   <a href="#dns.versioned">dns.versioned</a>
  &#8226;   <a href="#dns.zone">dns.zone</a>
  &#8226;   <a href="#dotenv">dotenv</a>
@@ -181,6 +181,7 @@ imports:
  &#8226;   <a href="#grpc">grpc</a>
  &#8226;   <a href="#heapq">heapq</a>
  &#8226;   <a href="#io">io</a>
+ &#8226;   <a href="#json">json</a>
  &#8226;   <a href="#keyword">keyword</a>
  &#8226;   <a href="#lector_firestore">lector_firestore</a>
  &#8226;   <a href="#lector_firestore2">lector_firestore2</a>
@@ -203,6 +204,7 @@ imports:
  &#8226;   <a href="#re._constants">re._constants</a>
  &#8226;   <a href="#re._parser">re._parser</a>
  &#8226;   <a href="#reprlib">reprlib</a>
+ &#8226;   <a href="#resetcibtron">resetcibtron</a>
  &#8226;   <a href="#serial.tools.list_ports">serial.tools.list_ports</a>
  &#8226;   <a href="#serial_reader">serial_reader</a>
  &#8226;   <a href="#socketio">socketio</a>
@@ -4479,7 +4481,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#cryptography.hazmat.primitives.serialization.ssh">cryptography.hazmat.primitives.serialization.ssh</a>
+    <a href="#app.py">app.py</a>
+ &#8226;   <a href="#cryptography.hazmat.primitives.serialization.ssh">cryptography.hazmat.primitives.serialization.ssh</a>
  &#8226;   <a href="#dns.asyncquery">dns.asyncquery</a>
  &#8226;   <a href="#dns.dnssec">dns.dnssec</a>
  &#8226;   <a href="#dns.query">dns.query</a>
@@ -4524,6 +4527,8 @@ imported by:
  &#8226;   <a href="#google.resumable_media._helpers">google.resumable_media._helpers</a>
  &#8226;   <a href="#http.server">http.server</a>
  &#8226;   <a href="#itsdangerous.encoding">itsdangerous.encoding</a>
+ &#8226;   <a href="#lector_firestore">lector_firestore</a>
+ &#8226;   <a href="#lector_firestore2">lector_firestore2</a>
  &#8226;   <a href="#proto.marshal.rules.bytes">proto.marshal.rules.bytes</a>
  &#8226;   <a href="#pyasn1_modules.pem">pyasn1_modules.pem</a>
  &#8226;   <a href="#pycparser.ply.yacc">pycparser.ply.yacc</a>
@@ -9435,17 +9440,12 @@ imported by:
   <a target="code" href="/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dns/__init__.py" type="text/plain"><tt>dns</tt></a>
 <span class="moduletype">Package</span>  <div class="import">
 imports:
-    <a href="#dns.dnssec">dns.dnssec</a>
- &#8226;   <a href="#dns.e164">dns.e164</a>
- &#8226;   <a href="#dns.namedict">dns.namedict</a>
- &#8226;   <a href="#dns.tsigkeyring">dns.tsigkeyring</a>
- &#8226;   <a href="#dns.version">dns.version</a>
+    <a href="#dns.version">dns.version</a>
 
   </div>
   <div class="import">
 imported by:
-    <a href="#app.py">app.py</a>
- &#8226;   <a href="#dns._asyncbackend">dns._asyncbackend</a>
+    <a href="#dns._asyncbackend">dns._asyncbackend</a>
  &#8226;   <a href="#dns._asyncio_backend">dns._asyncio_backend</a>
  &#8226;   <a href="#dns._ddr">dns._ddr</a>
  &#8226;   <a href="#dns._features">dns._features</a>
@@ -9674,7 +9674,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#dns._ddr">dns._ddr</a>
+    <a href="#app.py">app.py</a>
+ &#8226;   <a href="#dns._ddr">dns._ddr</a>
  &#8226;   <a href="#dns.asyncquery">dns.asyncquery</a>
  &#8226;   <a href="#dns.asyncresolver">dns.asyncresolver</a>
  &#8226;   <a href="#dns.nameserver">dns.nameserver</a>
@@ -9802,7 +9803,6 @@ imports:
   <div class="import">
 imported by:
     <a href="#app.py">app.py</a>
- &#8226;   <a href="#dns">dns</a>
 
   </div>
 
@@ -10035,7 +10035,6 @@ imports:
   <div class="import">
 imported by:
     <a href="#app.py">app.py</a>
- &#8226;   <a href="#dns">dns</a>
 
   </div>
 
@@ -10546,7 +10545,6 @@ imports:
   <div class="import">
 imported by:
     <a href="#app.py">app.py</a>
- &#8226;   <a href="#dns">dns</a>
 
   </div>
 
@@ -13068,7 +13066,6 @@ imports:
   <div class="import">
 imported by:
     <a href="#app.py">app.py</a>
- &#8226;   <a href="#dns">dns</a>
 
   </div>
 
@@ -13134,8 +13131,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#app.py">app.py</a>
- &#8226;   <a href="#dns">dns</a>
+    <a href="#dns">dns</a>
 
   </div>
 
@@ -39178,7 +39174,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#charset_normalizer.models">charset_normalizer.models</a>
+    <a href="#app.py">app.py</a>
+ &#8226;   <a href="#charset_normalizer.models">charset_normalizer.models</a>
  &#8226;   <a href="#engineio.json">engineio.json</a>
  &#8226;   <a href="#esptool.loader">esptool.loader</a>
  &#8226;   <a href="#firebase_admin">firebase_admin</a>
@@ -39229,6 +39226,8 @@ imported by:
  &#8226;   <a href="#json.decoder">json.decoder</a>
  &#8226;   <a href="#json.encoder">json.encoder</a>
  &#8226;   <a href="#json.scanner">json.scanner</a>
+ &#8226;   <a href="#lector_firestore">lector_firestore</a>
+ &#8226;   <a href="#lector_firestore2">lector_firestore2</a>
  &#8226;   <a href="#requests.compat">requests.compat</a>
  &#8226;   <a href="#setuptools._vendor.importlib_metadata">setuptools._vendor.importlib_metadata</a>
  &#8226;   <a href="#setuptools.config._validate_pyproject.error_reporting">setuptools.config._validate_pyproject.error_reporting</a>
@@ -39346,9 +39345,11 @@ imported by:
   <a target="code" href="/Users/wavesbyte/Documents/Repositorios/wavesbyte-taximetro-programmer/lector_firestore.py" type="text/plain"><tt>lector_firestore</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#google.cloud">google.cloud</a>
+    <a href="#base64">base64</a>
+ &#8226;   <a href="#google.cloud">google.cloud</a>
  &#8226;   <a href="#google.cloud.firestore">google.cloud.firestore</a>
  &#8226;   <a href="#google.oauth2.service_account">google.oauth2.service_account</a>
+ &#8226;   <a href="#json">json</a>
  &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#sys">sys</a>
 
@@ -39366,9 +39367,11 @@ imported by:
   <a target="code" href="/Users/wavesbyte/Documents/Repositorios/wavesbyte-taximetro-programmer/lector_firestore2.py" type="text/plain"><tt>lector_firestore2</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#google.cloud">google.cloud</a>
+    <a href="#base64">base64</a>
+ &#8226;   <a href="#google.cloud">google.cloud</a>
  &#8226;   <a href="#google.cloud.firestore">google.cloud.firestore</a>
  &#8226;   <a href="#google.oauth2.service_account">google.oauth2.service_account</a>
+ &#8226;   <a href="#json">json</a>
  &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#sys">sys</a>
 
@@ -41257,6 +41260,7 @@ imported by:
  &#8226;   <a href="#requests.auth">requests.auth</a>
  &#8226;   <a href="#requests.sessions">requests.sessions</a>
  &#8226;   <a href="#requests.utils">requests.utils</a>
+ &#8226;   <a href="#resetcibtron">resetcibtron</a>
  &#8226;   <a href="#rsa.pkcs1">rsa.pkcs1</a>
  &#8226;   <a href="#rsa.randnum">rsa.randnum</a>
  &#8226;   <a href="#runpy">runpy</a>
@@ -45301,6 +45305,23 @@ imported by:
  &#8226;   <a href="#requests.auth">requests.auth</a>
  &#8226;   <a href="#requests.models">requests.models</a>
  &#8226;   <a href="#requests.sessions">requests.sessions</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="resetcibtron"></a>
+  <a target="code" href="/Users/wavesbyte/Documents/Repositorios/wavesbyte-taximetro-programmer/resetcibtron.py" type="text/plain"><tt>resetcibtron</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#os">os</a>
+ &#8226;   <a href="#subprocess">subprocess</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#app.py">app.py</a>
 
   </div>
 
@@ -51868,6 +51889,7 @@ imported by:
  &#8226;   <a href="#platform">platform</a>
  &#8226;   <a href="#pycparser">pycparser</a>
  &#8226;   <a href="#pyi_rth_multiprocessing.py">pyi_rth_multiprocessing.py</a>
+ &#8226;   <a href="#resetcibtron">resetcibtron</a>
  &#8226;   <a href="#setuptools._distutils._msvccompiler">setuptools._distutils._msvccompiler</a>
  &#8226;   <a href="#setuptools._distutils.spawn">setuptools._distutils.spawn</a>
  &#8226;   <a href="#setuptools._distutils.util">setuptools._distutils.util</a>

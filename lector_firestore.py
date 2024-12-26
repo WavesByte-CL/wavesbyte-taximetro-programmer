@@ -1,25 +1,34 @@
 import os
 import sys
+import json
+import base64
 from google.cloud import firestore
 from google.oauth2.service_account import Credentials
 
 def initialize_firestore_with_service_account():
     """
-    Inicializa Firestore utilizando las credenciales de una cuenta de servicio desde el archivo credentials.json.
+    Inicializa Firestore utilizando credenciales decodificadas desde un archivo Base64.
     Este método es compatible con PyInstaller.
     """
     try:
-        # Asegúrate de que las credenciales estén en el mismo directorio que el script
+        # Asegúrate de que el archivo Base64 esté en el mismo directorio que el script
         base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-        credentials_path = os.path.join(base_dir, "credentials.json")
+        base64_credentials_path = os.path.join(base_dir, "cibtron.txt")
 
-        if not os.path.exists(credentials_path):
-            raise FileNotFoundError(f"El archivo de credenciales no se encontró en {credentials_path}")
+        if not os.path.exists(base64_credentials_path):
+            raise FileNotFoundError(f"El archivo Base64 no se encontró en {base64_credentials_path}")
 
-        # Cargar credenciales y proyecto desde el archivo credentials.json
-        credentials = Credentials.from_service_account_file(credentials_path)
+        # Leer y decodificar las credenciales en Base64
+        with open(base64_credentials_path, "r") as f:
+            base64_credentials = f.read()
+
+        decoded_credentials = json.loads(base64.b64decode(base64_credentials))
+
+        # Crear credenciales a partir de los datos decodificados
+        credentials = Credentials.from_service_account_info(decoded_credentials)
         project = credentials.project_id
 
+        # Inicializar cliente Firestore
         db = firestore.Client(credentials=credentials, project=project)
         print("Firestore inicializado correctamente con Service Account.")
         return db
@@ -67,7 +76,7 @@ def get_most_recent_document_by_serial(serial_number):
 
 # Ejemplo de uso
 if __name__ == "__main__":
-    serial_number = "000006"  # Este es el parámetro que irá variando
+    serial_number = "000000"  # Este es el parámetro que irá variando
     result = get_most_recent_document_by_serial(serial_number)
     if result:
         print("Último Documento Global:")

@@ -1,4 +1,3 @@
-# app.py
 from flask import Flask, render_template, request, jsonify, redirect
 from flask_socketio import SocketIO, send
 import os
@@ -14,8 +13,10 @@ from datetime import datetime
 from dotenv import load_dotenv
 from serial_reader import restart_and_get_value
 from eventlet.hubs import epolls, kqueue, selects
-from dns import dnssec, e164, namedict, tsigkeyring, update, version, zone
 import eventlet
+from resetcibtron import resetcibtron
+import json
+import base64
 
 def get_firestore_client():
     try:
@@ -35,30 +36,52 @@ def get_base_dir():
     else:
         return os.path.dirname(os.path.abspath(__file__))
 
+def get_resource_path(relative_path):
+    """Obtiene la ruta del recurso tanto para ejecución local como para PyInstaller."""
+    if getattr(sys, 'frozen', False):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 BASE_DIR = get_base_dir()
 
-SERVICE_ACCOUNT_PATH = os.path.join(BASE_DIR, "credentials.json")
+CIBTRON_CRED = os.path.join(BASE_DIR, "cibtron.txt")
 TEMP_BIN_PATH = os.path.join(BASE_DIR, "firmware.bin")
 DOTENV_PATH = os.path.join(BASE_DIR, ".env")
 load_dotenv(DOTENV_PATH)
 
-FIREBASE_API_KEY = os.getenv("FIREBASE_API_KEY")
+CIBTRON_API_KEY = os.getenv("CIBTRON_API")
+CIBTRON_API = base64.b64decode(CIBTRON_API_KEY).decode("utf-8")
+
+
+def get_decoded_credentials():
+    with open(CIBTRON_CRED, "r") as f:
+        base64_credentials = f.read()
+    return json.loads(base64.b64decode(base64_credentials))
+
+decoded_credentials = get_decoded_credentials()
 
 numero_serial = None
 current_job_status = "Listo"
 monitor_thread = None
-listeners = {}  # Diccionario para rastrear listeners activos
+listeners = {}
 is_programming = False
 
 try:
-    if not os.path.isfile(SERVICE_ACCOUNT_PATH):
+    if not os.path.isfile(CIBTRON_CRED):
         raise FileNotFoundError(
-            f"Archivo de credenciales no encontrado: {SERVICE_ACCOUNT_PATH}"
+            f"Archivo Base64 de credenciales no encontrado: {CIBTRON_CRED}"
         )
 
-    print("Inicializando Firebase Admin...")
-    cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
+    # Leer y decodificar las credenciales en Base64
+    with open(CIBTRON_CRED, "r") as f:
+        base64_credentials = f.read()
+
+    decoded_credentials = json.loads(base64.b64decode(base64_credentials))
+
+    print("Inicializando Firebase Admin con credenciales decodificadas...")
+    cred = credentials.Certificate(decoded_credentials)
     initialize_app(cred)
     print("Firebase Admin inicializado correctamente.")
 except ValueError as e:
@@ -93,7 +116,7 @@ def reset_state():
 def emit_status_update(status):
     global current_job_status
     current_job_status = status
-    print(f"Emitiendo estado: {current_job_status}")
+    #print(f"Emitiendo estado: {current_job_status}")
     socketio.emit("job_status_update", {"status": current_job_status}, to=None)
 
 def list_serial_ports():
@@ -110,6 +133,8 @@ def list_serial_ports():
         print(f"Error al listar puertos: {e}")
         return []
 
+
+
 def download_binary(gcs_path):
     try:
         if not gcs_path.startswith("gs://"):
@@ -119,11 +144,11 @@ def download_binary(gcs_path):
         bucket_name, *file_path_parts = gcs_path.split("/")
         file_path = "/".join(file_path_parts)
 
-        storage_client = storage.Client.from_service_account_json(SERVICE_ACCOUNT_PATH)
+        # Usar credenciales decodificadas
+        storage_client = storage.Client.from_service_account_info(decoded_credentials)
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(file_path)
         blob.download_to_filename(TEMP_BIN_PATH)
-        print(f"Binario descargado correctamente a {TEMP_BIN_PATH}")
         return TEMP_BIN_PATH
     except Exception as e:
         print(f"Error descargando binario desde GCS: {e}")
@@ -131,19 +156,7 @@ def download_binary(gcs_path):
 
 def run_cloud_run_job_with_env(project_id, region, job_name, parameters, args=None):
     try:
-        subprocess.run(
-            [
-                "gcloud",
-                "auth",
-                "activate-service-account",
-                f"--key-file={SERVICE_ACCOUNT_PATH}",
-            ],
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-
+        # Configura gcloud para usar las credenciales decodificadas
         env_vars = ",".join([f"{key}={value}" for key, value in parameters.items()])
         command = [
             "gcloud",
@@ -183,11 +196,11 @@ def listen_to_job_status(user, uuid, port):
     global numero_serial
     global current_job_status
     document_path = f"logs/{numero_serial}/{user}/{uuid}"
-    print(f"Escuchando logs en: {document_path}")
+    #print(f"Escuchando logs en: {document_path}")
 
     # Verifica si ya existe un listener activo para este documento
     if document_path in listeners:
-        print(f"Eliminando listener previo para {document_path}")
+        #print(f"Eliminando listener previo para {document_path}")
         listeners[document_path].unsubscribe()
         del listeners[document_path]
 
@@ -200,7 +213,7 @@ def listen_to_job_status(user, uuid, port):
                     log_data = doc.to_dict()
                     job_status = log_data.get("status", "unknown")
                     current_job_status = job_status
-                    print(f"Estado actualizado del job: {job_status}")
+                    #print(f"Estado actualizado del job: {job_status}")
 
                     try:
                         if job_status == "success":
@@ -228,11 +241,11 @@ def program_device_thread(port, log_data):
         with app.app_context():
             binary_path = log_data.get("path")
             if binary_path:
-                emit_status_update("Descargando binario...")
-                current_job_status = "Downloading binary..."
+                emit_status_update("Descargando Recursos...")
+                current_job_status = "Descargando Recursos..."
                 download_binary(binary_path)
 
-            current_job_status = "Programming WavesByte Cibtron WB-001..."
+            current_job_status = "Programando WavesByte Cibtron WB-001..."
             program_status = program_esp32(port)
             current_job_status = program_status
             current_job_status = "Programación completa."
@@ -268,18 +281,23 @@ def program_esp32(port, baud_rate="115200"):
             "0x10000",
             TEMP_BIN_PATH,
         ]
-        print("Ejecutando esptool con los siguientes argumentos:", command)
+        #print("Ejecutando esptool con los siguientes argumentos:", command)
         sys.argv = ["esptool.py"] + command
         esptool_main()
+
+        # Eliminar el archivo binario tras la programación
+        os.remove(TEMP_BIN_PATH)
+        #print(f"Archivo binario eliminado: {TEMP_BIN_PATH}")
 
         return "WavesByte Cibtron WB-001 programado exitosamente."
     except Exception as e:
         raise
 
 
+
 @app.route("/login", methods=["GET"])
 def login_page():
-    return render_template("login.html", api_key=FIREBASE_API_KEY)
+    return render_template("login.html", api_key=CIBTRON_API)
 
 
 @app.route("/")
@@ -327,9 +345,13 @@ def logout():
 
 @app.route("/execute_and_program", methods=["POST"])
 def execute_and_program():
-    global current_job_status, monitor_thread, is_programming
+    global current_job_status, monitor_thread, is_programming, numero_serial
     if is_programming:
         return jsonify({"status": "error", "message": "Ya hay un trabajo en curso."})
+
+    if numero_serial == "ERROR":
+      return jsonify({"status": "error", "message": "No se puede programar con un número de serie inválido."})
+
     try:
         is_programming = True
         current_job_status = "Listo"
@@ -444,6 +466,7 @@ def get_ports():
 
 @app.route("/get_serial_number", methods=["POST"])
 def get_serial_number():
+    global numero_serial
     data = request.json
     port = data.get("port")
 
@@ -455,6 +478,7 @@ def get_serial_number():
         TIMEOUT = 5
 
         serial_number = restart_and_get_value(port, BAUDRATE, TIMEOUT)
+        numero_serial = serial_number.upper()
 
         if serial_number:
             return jsonify({"status": "success", "serial_number": serial_number})
@@ -505,6 +529,24 @@ def get_user_data():
     if user:
         return jsonify({"email": user["email"]}), 200
     return jsonify({"error": "Usuario no autenticado"}), 401
+
+
+@app.route("/resetcibtron", methods=["POST"])
+def reset_cibtron_route():
+    port = request.form.get("port")
+    firmware_path = get_resource_path("leer_serial_memoria.ino.bin")
+
+    if not port:
+        return jsonify({"status": "error", "message": "Port no proporcionado"}), 400
+
+    try:
+        resetcibtron(port, firmware_path)
+        return jsonify({"status": "success", "message": "Reset completado con éxito"})
+    except Exception as e:
+        error_message = f"Error al realizar el reset: {str(e)}"
+        print(error_message)
+        return jsonify({"status": "error", "message": error_message}), 500
+
 
 if __name__ == "__main__":
     socketio.run(
