@@ -1,5 +1,5 @@
 .env
-credentials.json
+cibtron.txt
 *.pyc
 esptool/__pycache__/
 esptool/targets/__pycache__/
