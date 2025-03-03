@@ -130,13 +130,10 @@ try:
     # Leer y decodificar las credenciales en Base64
     with open(CIBTRON_CRED, "r") as f:
         base64_credentials = f.read()
-
+        
     decoded_credentials = json.loads(base64.b64decode(base64_credentials))
-
-    print("Inicializando Firebase Admin con credenciales decodificadas...")
     cred = credentials.Certificate(decoded_credentials)
     initialize_app(cred)
-    print("Firebase Admin inicializado correctamente.")
 except ValueError as e:
     print("Firebase Admin ya estaba inicializado:", e)
 except Exception as e:
