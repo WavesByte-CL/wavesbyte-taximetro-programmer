@@ -7,3 +7,5 @@ y el archivo cibtron.txt que corresponde a las credenciales.
 
 
 
+pyinstaller programmer_win.spec -> para windows
+pyinstaller programmer_mac.spec -> para mac
