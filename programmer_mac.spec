@@ -23,6 +23,7 @@ a = Analysis(
         (certifi.where(), 'certifi')
     ],
     hiddenimports=[
+        'intelhex',
         'socketio',
         'engineio',
         'engineio.async_drivers.eventlet',

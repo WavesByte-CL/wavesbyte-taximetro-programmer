@@ -30,10 +30,9 @@ def initialize_firestore_with_service_account():
 
         # Inicializar cliente Firestore
         db = firestore.Client(credentials=credentials, project=project)
-        print("Firestore inicializado correctamente con Service Account.")
         return db
     except Exception as e:
-        print(f"Error inicializando Firestore con Service Account: {e}")
+        print(f"Error inicializando: {e}")
         return None
 
 def get_most_recent_document_by_serial(serial_number):

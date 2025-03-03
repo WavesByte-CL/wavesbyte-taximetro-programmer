@@ -6,4 +6,5 @@
 import esptool
 
 if __name__ == "__main__":
+    print("Ejecutando esptool.__main__")
     esptool._main()

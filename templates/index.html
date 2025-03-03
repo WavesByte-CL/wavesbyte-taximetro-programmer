@@ -84,24 +84,64 @@
 
       <form id="jobForm" onsubmit="executeAndProgram(event)">
         <fieldset class="form-section">
-          <legend>Información del Dispositivo</legend>
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label for="port">Estado del taxímetro:</label>
-              <div class="input-group">
-                <select id="port" name="port" class="form-control" required>
-                  <option value="" disabled selected>
-                    Esperando detección...
-                  </option>
-                </select>
-                <div class="input-group-append">
-                  <button
-                    id="updatePortsBtn"
-                    class="btn btn-outline-secondary"
-                    type="button"
-                  >
-                    Actualizar
-                  </button>
+            <legend>Información del Dispositivo</legend>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="port">Estado del taxímetro:</label>
+                    <div class="input-group">
+                      <select id="port" name="port" class="form-control" required>
+                        <option value="" disabled selected>
+                          Esperando detección...
+                        </option>
+                      </select>
+                      <div class="input-group-append">
+                        <button
+                          id="updatePortsBtn"
+                          class="btn btn-outline-secondary"
+                          type="button"
+                        >
+                          Actualizar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                   <div class="form-group col-md-6">
+                        <label for="NUMERO_SERIAL">NÚMERO SERIAL:</label>
+                        <div class="input-group">
+                            <input
+                              type="text"
+                              id="NUMERO_SERIAL"
+                              name="NUMERO_SERIAL"
+                              class="form-control"
+                              title="Es el número serial del taxímetro"
+                              readonly
+                              required
+                              maxlength="20"
+                              style="width: 100%;"
+                            />
+                            <div class="input-group-append">
+                                <button
+                                    id="searchSerialBtn"
+                                    class="btn btn-primary"
+                                    type="button"
+                                >
+                                    Rellenar Formulario
+                                </button>
+                                <button
+                                    id="searchCertificateBtn"
+                                    class="btn btn-info ml-2"
+                                    type="button"
+                                >
+                                    Buscar Programaciones
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+             <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="USER">PROGRAMADOR:</label>
+                    <input type="text" id="USER" name="USER" class="form-control" readonly required />
                 </div>
               </div>
             </div>

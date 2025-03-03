@@ -13,3 +13,4 @@ esp-idf-nvs-partition-gen
 pyinstaller
 eventlet
 google-cloud-run
+intelhex
