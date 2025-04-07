@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect
+from flask import Flask, render_template, request, jsonify, redirect, send_file
 from flask_socketio import SocketIO, send
 import os
 import sys
@@ -20,6 +20,15 @@ import base64
 from google.oauth2 import service_account
 from google.auth.transport.requests import Request
 import requests
+from fillpdf import fillpdfs
+from datetime import date
+
+#Ruta al archivo PDF de entrada y salida
+input_pdf_path = "templatewb.pdf"
+output_pdf_path = "filled_form.pdf"
+
+app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True)
 
 def generate_access_token():
     try:
@@ -147,8 +156,7 @@ except Exception as e:
     print(f"Error al obtener cliente Firestore: {e}")
     sys.exit(1)
 
-app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True)
+
 
 def reset_state():
     global current_job_status, is_programming, monitor_thread
@@ -343,6 +351,70 @@ def program_esp32(port, baud_rate="115200"):
     except Exception as e:
         raise
 
+import platform
+import os
+
+def open_pdf(filepath):
+    """
+    Abre el archivo PDF usando la aplicación predeterminada del sistema operativo.
+    """
+    if platform.system() == 'Darwin':       # macOS
+        subprocess.call(('open', filepath))
+    elif platform.system() == 'Windows':    # Windows
+        os.startfile(filepath)
+    else:                                   # linux variants
+        subprocess.call(('xdg-open', filepath))
+
+
+@app.route("/generate_pdf", methods=["POST"])
+def generate_pdf():
+    try:
+        form_data = request.get_json()
+
+        # Obtener la fecha actual en formato yyyy/mm/dd
+        today = date.today().strftime("%Y/%m/%d")
+
+        # Recopilar datos del formulario
+        data_dict = {
+            "divisor": form_data["CANTIDAD_PULSOS"],
+            "resolucion": form_data["RESOLUCION"],
+            "tarifa1": f"{form_data['TARIFA_INICIAL']}/{form_data['TARIFA_CAIDA_PARCIAL_METROS']}",
+            "tarifa2": f"{form_data['TARIFA_INICIAL']}/{form_data['TARIFA_CAIDA_PARCIAL_METROS']}",
+            "tarifa3": f"{form_data['TARIFA_INICIAL']}/{form_data['TARIFA_CAIDA_PARCIAL_METROS']}",
+            "fecha1": today,
+            "fecha2": today,
+            "fecha3": today,
+            "fecha4": today,
+            "marca1": form_data["MARCA_VEHICULO"],
+            "marca2": form_data["MARCA_VEHICULO"],
+            "marca3": form_data["MARCA_VEHICULO"],
+            "patente1": form_data["PATENTE"],
+            "patente2": form_data["PATENTE"],
+            "patente3": form_data["PATENTE"],
+            "n_sello1": form_data["NUMERO_SELLO"],
+            "n_sello2": form_data["NUMERO_SELLO"],
+            "n_sello3": form_data["NUMERO_SELLO"],
+            "n_serie1": form_data["NUMERO_SERIAL"],
+            "n_serie2": form_data["NUMERO_SERIAL"],
+            "n_serie3": form_data["NUMERO_SERIAL"],
+            "observacion1": "-",
+            "observacion2": "-",
+            "nombre_propietario": f"{form_data['NOMBRE_PROPIETARIO']} {form_data['APELLIDO_PROPIETARIO']}"
+        }
+
+        # Rellenar el formulario con los datos proporcionados
+        fillpdfs.write_fillable_pdf(input_pdf_path, output_pdf_path, data_dict, flatten=True)
+
+        # Abrir el PDF con la aplicación predeterminada
+        open_pdf(output_pdf_path)
+
+
+        return jsonify({"status": "success", "message": "PDF generado y abierto con éxito."}), 200
+
+
+    except Exception as e:
+        print(f"Error al generar el PDF: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route("/login", methods=["GET"])

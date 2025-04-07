@@ -84,27 +84,27 @@
 
       <form id="jobForm" onsubmit="executeAndProgram(event)">
         <fieldset class="form-section">
-            <legend>Información del Dispositivo</legend>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="port">Estado del taxímetro:</label>
-                    <div class="input-group">
-                      <select id="port" name="port" class="form-control" required>
-                        <option value="" disabled selected>
-                          Esperando detección...
-                        </option>
-                      </select>
-                      <div class="input-group-append">
-                        <button
-                          id="updatePortsBtn"
-                          class="btn btn-outline-secondary"
-                          type="button"
-                        >
-                          Actualizar
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+          <legend>Información del Dispositivo</legend>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="port">Estado del taxímetro:</label>
+              <div class="input-group">
+                <select id="port" name="port" class="form-control" required>
+                  <option value="" disabled selected>
+                    Esperando detección...
+                  </option>
+                </select>
+                <div class="input-group-append">
+                  <button
+                    id="updatePortsBtn"
+                    class="btn btn-outline-secondary"
+                    type="button"
+                  >
+                    Actualizar
+                  </button>
+                </div>
+              </div>
+            </div>
             <div class="form-group col-md-6">
               <label for="NUMERO_SERIAL">NÚMERO SERIAL:</label>
               <div class="input-group">
@@ -551,6 +551,17 @@
           Cancelar
         </button>
       </form>
+
+       <div class="d-flex justify-content-center mt-2">
+        <button
+          id="printButton"
+          type="button"
+          class="btn btn-success btn-block"
+          onclick="generateAndPrintPDF()"
+        >
+          Imprimir
+        </button>
+      </div>
 
       <div id="jobLogs"></div>
 

@@ -219,10 +219,11 @@ async function checkStatus() {
     if (currentStatus) {
       console.log("Estado actualizado desde el servidor:", currentStatus);
 
-      if (currentStatus !== lastStatus) { // Verificar si el estado ha cambiado
-         addLogMessage(`<strong>Status:</strong> ${currentStatus}`);
-         lastStatus = currentStatus; // Actualizar el último estado
-        }
+      if (currentStatus !== lastStatus) {
+        // Verificar si el estado ha cambiado
+        addLogMessage(`<strong>Status:</strong> ${currentStatus}`);
+        lastStatus = currentStatus; // Actualizar el último estado
+      }
 
       if (currentStatus === "Finalizado") {
         isProgramFinished = true;
@@ -292,7 +293,7 @@ document
           data.TARIFA_CAIDA_PARCIAL_MINUTO || "";
         document.getElementById("MOSTRAR_VELOCIDAD_EN_PANTALLA").value =
           data.MOSTRAR_VELOCIDAD_EN_PANTALLA || "";
-          document.getElementById("COLOR_FONDO_PANTALLA").value =
+        document.getElementById("COLOR_FONDO_PANTALLA").value =
           data.COLOR_FONDO_PANTALLA || "";
         document.getElementById("COLOR_LETRAS_PANTALLA").value =
           data.COLOR_LETRAS_PANTALLA || "";
@@ -301,7 +302,7 @@ document
         document.getElementById("PROPAGANDA_1").value = data.PROPAGANDA_1 || "";
         document.getElementById("PROPAGANDA_2").value = data.PROPAGANDA_2 || "";
         document.getElementById("PROPAGANDA_3").value = data.PROPAGANDA_3 || "";
-         document.getElementById("PROPAGANDA_4").value = data.PROPAGANDA_4 || "";
+        document.getElementById("PROPAGANDA_4").value = data.PROPAGANDA_4 || "";
 
         alert("Datos completados exitosamente.");
       } else {
@@ -387,31 +388,31 @@ function showDetails(data) {
 
   if (data.env_vars && typeof data.env_vars === "object") {
     const fieldMapping = {
-        UUID: "UUID",
-        USER: "PROGRAMADOR",
-        DATE: "FECHA DE PROGRAMACIÓN",
-        NUMERO_SERIAL: "NÚMERO DE SERIE",
-        NUMERO_SELLO: "NÚMERO DE SELLO",
-        MARCA_TAXIMETRO: "MARCA DEL TAXÍMETRO",
-        MODELO_TAXIMETRO: "MODELO DEL TAXÍMETRO",
-        NOMBRE_PROPIETARIO: "NOMBRE DEL PROPIETARIO",
-        APELLIDO_PROPIETARIO: "APELLIDO DEL PROPIETARIO",
-        MARCA_VEHICULO: "MARCA DEL VEHÍCULO",
-        YEAR_VEHICULO: "AÑO DEL VEHÍCULO",
-        PATENTE: "PATENTE",
-        RESOLUCION: "RESOLUCIÓN",
-        CANTIDAD_PULSOS: "DIVISOR",
-        TARIFA_INICIAL: "TARIFA INICIAL",
-        TARIFA_CAIDA_PARCIAL_METROS: "TARIFA CAÍDA PARCIAL METROS",
-        TARIFA_CAIDA_PARCIAL_MINUTO: "TARIFA CAÍDA PARCIAL MINUTOS",
-        MOSTRAR_VELOCIDAD_EN_PANTALLA: "MOSTRAR METROS EN PANTALLA",
-        COLOR_FONDO_PANTALLA: "COLOR DE FONDO EN PANTALLA",
-        COLOR_LETRAS_PANTALLA: "COLOR DE LETRAS EN PANTALLA",
-        COLOR_PRECIO_PANTALLA: "COLOR DE PRECIO EN PANTALLA",
-        PROPAGANDA_1: "PROPAGANDA Nº1",
-        PROPAGANDA_2: "PROPAGANDA Nº2",
-        PROPAGANDA_3: "PROPAGANDA Nº3",
-        PROPAGANDA_4: "PROPAGANDA Nº4",
+      UUID: "UUID",
+      USER: "PROGRAMADOR",
+      DATE: "FECHA DE PROGRAMACIÓN",
+      NUMERO_SERIAL: "NÚMERO DE SERIE",
+      NUMERO_SELLO: "NÚMERO DE SELLO",
+      MARCA_TAXIMETRO: "MARCA DEL TAXÍMETRO",
+      MODELO_TAXIMETRO: "MODELO DEL TAXÍMETRO",
+      NOMBRE_PROPIETARIO: "NOMBRE DEL PROPIETARIO",
+      APELLIDO_PROPIETARIO: "APELLIDO DEL PROPIETARIO",
+      MARCA_VEHICULO: "MARCA DEL VEHÍCULO",
+      YEAR_VEHICULO: "AÑO DEL VEHÍCULO",
+      PATENTE: "PATENTE",
+      RESOLUCION: "RESOLUCIÓN",
+      CANTIDAD_PULSOS: "DIVISOR",
+      TARIFA_INICIAL: "TARIFA INICIAL",
+      TARIFA_CAIDA_PARCIAL_METROS: "TARIFA CAÍDA PARCIAL METROS",
+      TARIFA_CAIDA_PARCIAL_MINUTO: "TARIFA CAÍDA PARCIAL MINUTOS",
+      MOSTRAR_VELOCIDAD_EN_PANTALLA: "MOSTRAR METROS EN PANTALLA",
+      COLOR_FONDO_PANTALLA: "COLOR DE FONDO EN PANTALLA",
+      COLOR_LETRAS_PANTALLA: "COLOR DE LETRAS EN PANTALLA",
+      COLOR_PRECIO_PANTALLA: "COLOR DE PRECIO EN PANTALLA",
+      PROPAGANDA_1: "PROPAGANDA Nº1",
+      PROPAGANDA_2: "PROPAGANDA Nº2",
+      PROPAGANDA_3: "PROPAGANDA Nº3",
+      PROPAGANDA_4: "PROPAGANDA Nº4",
     };
     for (const [key, title] of Object.entries(fieldMapping)) {
       const value = data.env_vars[key] || "N/A";
@@ -564,10 +565,12 @@ document
   .getElementById("resetButton")
   .addEventListener("click", async () => {
     if (!selectedPort) {
-        alert("Debe seleccionar/conectar un puerto primero para poder resetear el dispositivo.");
-        return;
-      }
-      
+      alert(
+        "Debe seleccionar/conectar un puerto primero para poder resetear el dispositivo."
+      );
+      return;
+    }
+
     if (!confirm("¿Estás seguro de que deseas resetear el taxímetro?")) {
       return;
     }
@@ -587,14 +590,15 @@ document
       const result = await response.json();
 
       if (result.status === "success") {
-        addLogMessage("Dispositivo reseteado con el firmware por defecto correctamente.");
+        addLogMessage(
+          "Dispositivo reseteado con el firmware por defecto correctamente."
+        );
         alert("El dispositivo ha sido reseteado correctamente.");
         location.reload();
         initializeForm();
         updatePortsBtn.disabled = false;
         updatePortsBtn.textContent = "Actualizar";
         selectedPort = null;
-
       } else {
         addLogMessage(`Error al resetear: ${result.message}`);
         alert(`Error al resetear: ${result.message}`);
@@ -605,3 +609,69 @@ document
       alert(`Error al resetear el dispositivo: ${error.message}`);
     }
   });
+
+function generateAndPrintPDF() {
+  if (validateForm()) {
+    //console.log("Formulario validado, generando PDF...");
+    // Recopilar datos del formulario
+    const formData = {
+      CANTIDAD_PULSOS: document.getElementById("CANTIDAD_PULSOS").value,
+      RESOLUCION: document.getElementById("RESOLUCION").value,
+      TARIFA_INICIAL: document.getElementById("TARIFA_INICIAL").value,
+      TARIFA_CAIDA_PARCIAL_METROS: document.getElementById(
+        "TARIFA_CAIDA_PARCIAL_METROS"
+      ).value,
+      MARCA_VEHICULO: document.getElementById("MARCA_VEHICULO").value,
+      PATENTE: document.getElementById("PATENTE").value,
+      NUMERO_SELLO: document.getElementById("NUMERO_SELLO").value,
+      NUMERO_SERIAL: document.getElementById("NUMERO_SERIAL").value,
+      NOMBRE_PROPIETARIO: document.getElementById("NOMBRE_PROPIETARIO").value,
+      APELLIDO_PROPIETARIO: document.getElementById("APELLIDO_PROPIETARIO")
+        .value,
+    };
+    //console.log(formData);
+    // Enviar datos al servidor para generar el PDF
+    fetch("/generate_pdf", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.blob();
+        } else {
+          throw new Error("Error al generar el PDF.");
+        }
+      })
+      .then((blob) => {
+        // Crear un objeto URL para el blob
+        const url = URL.createObjectURL(blob);
+
+        // Abrir una nueva ventana para imprimir el PDF
+        window.open(url, "_blank");
+
+        // Limpiar el objeto URL después de abrir la ventana
+        URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("Error al generar el PDF: " + error.message);
+      });
+  } else {
+    alert("Por favor, complete todos los campos requeridos del formulario.");
+  }
+}
+
+
+
+function validateForm() {
+  const form = document.getElementById("jobForm");
+  if (form.checkValidity() === false) {
+    form.classList.add("was-validated");
+    return false;
+  }
+  form.classList.remove("was-validated");
+  return true;
+}
