@@ -17,9 +17,15 @@
       href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"
       rel="stylesheet"
     />
+    <!-- Asegúrate de que esta ruta sea correcta para tus estilos CSS -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <!-- Añadir Font Awesome para iconos si los usas (ej. en el botón Ver Detalles) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
   </head>
 
@@ -35,17 +41,28 @@
           />
           <h1>WavesByte Cibtron WB-001</h1>
         </div>
-        <button onclick="logout()">Cerrar sesión</button>
+        <div class="user-info">
+          <span id="userEmailDisplay" style="margin-right: 15px"></span>
+          <!-- Para mostrar el email del usuario -->
+          <button class="btn btn-outline-light btn-sm" onclick="logout()">
+            Cerrar sesión
+          </button>
+          <!-- Estilo mejorado -->
+        </div>
       </div>
     </header>
 
     <div class="container mt-4">
-      <h2 class="text-center mb-4">Programaciones</h2>
+      <h2 class="text-center mb-4">Programaciones Anteriores</h2>
+      <!-- Título más claro -->
       <div class="horizontal-scroll">
-        <div id="certificatesList" class="d-flex"></div>
+        <div id="certificatesList" class="d-flex">
+          <!-- Las tarjetas de certificados se cargarán aquí -->
+        </div>
       </div>
     </div>
 
+    <!-- Modal para Detalles de Programación (ya existente) -->
     <div
       class="modal fade"
       id="detailsModal"
@@ -59,18 +76,35 @@
             <h5 class="modal-title" id="detailsModalLabel">
               Detalles de la programación
             </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">×</span>
+            </button>
           </div>
           <div class="modal-body">
             <div id="modalContent"></div>
           </div>
-          <div class="modal-footer"></div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Cerrar
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="container">
+    <div class="container mt-5">
+      <!-- Ajuste de margen superior -->
       <h2 class="text-center mb-4">
-        Configuración del Taxímetro Cibtron WB-001
+        Configuración del Taxímetro Cibtron WB-001 (Programación de Parámetros)
       </h2>
 
       <div class="d-flex justify-content-center align-items-center mb-3">
@@ -84,29 +118,32 @@
 
       <form id="jobForm" onsubmit="executeAndProgram(event)">
         <fieldset class="form-section">
-            <legend>Información del Dispositivo</legend>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="port">Estado del taxímetro:</label>
-                    <div class="input-group">
-                      <select id="port" name="port" class="form-control" required>
-                        <option value="" disabled selected>
-                          Esperando detección...
-                        </option>
-                      </select>
-                      <div class="input-group-append">
-                        <button
-                          id="updatePortsBtn"
-                          class="btn btn-outline-secondary"
-                          type="button"
-                        >
-                          Actualizar
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+          <legend>Información del Dispositivo</legend>
+          <div class="form-row">
             <div class="form-group col-md-6">
-              <label for="NUMERO_SERIAL">NÚMERO SERIAL:</label>
+              <label for="port">Puerto del Taxímetro:</label>
+              <!-- Título más claro -->
+              <div class="input-group">
+                <select id="port" name="port" class="form-control" required>
+                  <option value="" disabled selected>
+                    Esperando detección...
+                  </option>
+                </select>
+                <div class="input-group-append">
+                  <button
+                    id="updatePortsBtn"
+                    class="btn btn-outline-secondary"
+                    type="button"
+                  >
+                    Actualizar Puertos
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="NUMERO_SERIAL"
+                >NÚMERO SERIAL (Detectado/Ingresado):</label
+              >
               <div class="input-group">
                 <input
                   type="text"
@@ -151,7 +188,7 @@
               />
             </div>
             <div class="form-group col-md-6">
-              <label for="UUID">UUID:</label>
+              <label for="UUID">UUID (Programación Parámetros):</label>
               <input
                 type="text"
                 id="UUID"
@@ -162,21 +199,20 @@
               />
             </div>
           </div>
+          <!-- CAMPOS OCULTOS CORREGIDOS -->
           <input
-            type="text"
+            type="hidden"
             id="MARCA_TAXIMETRO"
             name="MARCA_TAXIMETRO"
             required
             readonly
-            style="display: none"
           />
           <input
-            type="text"
+            type="hidden"
             id="MODELO_TAXIMETRO"
             name="MODELO_TAXIMETRO"
             required
             readonly
-            style="display: none"
           />
         </fieldset>
 
@@ -193,7 +229,7 @@
                 pattern="^\d+$"
                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                 title="Solo se permiten números"
-                placeholder="Ejemplo: 1"
+                placeholder="Ejemplo: 12345"
                 required
               />
             </div>
@@ -204,9 +240,9 @@
                 id="NOMBRE_PROPIETARIO"
                 name="NOMBRE_PROPIETARIO"
                 class="form-control"
-                pattern="^[A-ZÑ ]+$"
-                oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑ ]/g, '')"
-                title="Solo letras mayúsculas"
+                pattern="^[A-ZÑÁÉÍÓÚÜ ]+$"
+                oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑÁÉÍÓÚÜ ]/g, '')"
+                title="Solo letras mayúsculas y espacios"
                 placeholder="Ejemplo: JUAN"
                 required
               />
@@ -222,10 +258,10 @@
                 id="APELLIDO_PROPIETARIO"
                 name="APELLIDO_PROPIETARIO"
                 class="form-control"
-                pattern="^[A-ZÑ ]+$"
-                oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑ ]/g, '')"
-                title="Solo letras mayúsculas"
-                placeholder="Ejemplo: PEREZ"
+                pattern="^[A-ZÑÁÉÍÓÚÜ ]+$"
+                oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑÁÉÍÓÚÜ ]/g, '')"
+                title="Solo letras mayúsculas y espacios"
+                placeholder="Ejemplo: PÉREZ"
                 required
               />
             </div>
@@ -237,9 +273,9 @@
                 id="MARCA_VEHICULO"
                 name="MARCA_VEHICULO"
                 class="form-control"
-                pattern="^[A-ZÑ ]+$"
-                oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑ ]/g, '')"
-                title="Solo letras mayúsculas"
+                pattern="^[A-ZÑÁÉÍÓÚÜ0-9 ]+$"
+                oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÑÁÉÍÓÚÜ0-9 ]/g, '')"
+                title="Solo letras mayúsculas, números y espacios"
                 placeholder="Ejemplo: NISSAN"
                 required
               />
@@ -262,15 +298,18 @@
               />
             </div>
             <div class="form-group col-md-6">
-              <label for="PATENTE">PATENTE (AAAA-00 o AA00-00):</label>
+              <label for="PATENTE"
+                >PATENTE (AAAA00 o AA00AA o AAAA-00 o AA00-00):</label
+              >
               <input
                 type="text"
                 id="PATENTE"
                 name="PATENTE"
                 class="form-control"
-                pattern="^([A-Z]{4}-\d{2}|[A-Z]{2}\d{2}-\d{2})$"
-                title="Debe cumplir con el formato AAAA-00 o AA00-00"
-                placeholder="Ejemplo: ABCD-12 o AB12-34"
+                oninput="this.value = this.value.toUpperCase()"
+                pattern="^([A-Z]{4}\d{2}|[A-Z]{2}\d{2}[A-Z]{2}|[A-Z]{4}-\d{2}|[A-Z]{2}\d{2}-\d{2})$"
+                title="Formatos: AAAA00, AA00AA, AAAA-00, AA00-00"
+                placeholder="Ejemplo: PPU123 o AB12CD"
                 required
               />
             </div>
@@ -281,7 +320,9 @@
           <legend>Configuración de Tarifas</legend>
           <div class="form-row">
             <div class="form-group col-md-6">
-              <label for="RESOLUCION">RESOLUCIÓN (decimal):</label>
+              <label for="RESOLUCION"
+                >RESOLUCIÓN (Distancia por pulso, ej: 1000.0):</label
+              >
               <input
                 type="number"
                 id="RESOLUCION"
@@ -289,19 +330,21 @@
                 class="form-control"
                 step="any"
                 min="0"
-                placeholder="Ejemplo: 1500.45"
+                placeholder="Ejemplo: 1000.0"
                 required
               />
             </div>
             <div class="form-group col-md-6">
-              <label for="CANTIDAD_PULSOS">DIVISOR PULSOS:</label>
+              <label for="CANTIDAD_PULSOS"
+                >DIVISOR PULSOS (Pulsos por tick de tarifa):</label
+              >
               <input
                 type="number"
                 id="CANTIDAD_PULSOS"
                 name="CANTIDAD_PULSOS"
                 class="form-control"
-                step="any"
-                min="0"
+                step="1"
+                min="1"
                 placeholder="Ejemplo: 1"
                 required
               />
@@ -309,7 +352,7 @@
           </div>
           <div class="form-row">
             <div class="form-group col-md-4">
-              <label for="TARIFA_INICIAL">TARIFA INICIAL:</label>
+              <label for="TARIFA_INICIAL">TARIFA INICIAL ($):</label>
               <input
                 type="number"
                 id="TARIFA_INICIAL"
@@ -323,7 +366,7 @@
             </div>
             <div class="form-group col-md-4">
               <label for="TARIFA_CAIDA_PARCIAL_METROS"
-                >PRECIO CAÍDA METROS:</label
+                >PRECIO CAÍDA METROS ($):</label
               >
               <input
                 type="number"
@@ -338,7 +381,7 @@
             </div>
             <div class="form-group col-md-4">
               <label for="TARIFA_CAIDA_PARCIAL_MINUTO"
-                >PRECIO CAÍDA MINUTO:</label
+                >PRECIO CAÍDA MINUTO ($):</label
               >
               <input
                 type="number"
@@ -415,9 +458,9 @@
                 class="form-control"
                 required
               >
+                <option value="TFT_WHITE" selected>Blanco</option>
                 <option value="TFT_YELLOW">Amarillo</option>
                 <option value="TFT_BLACK">Negro</option>
-                <option value="TFT_WHITE">Blanco</option>
                 <option value="TFT_NAVY">Azul oscuro</option>
                 <option value="TFT_DARKGREEN">Verde oscuro</option>
                 <option value="TFT_DARKCYAN">Cian oscuro</option>
@@ -449,9 +492,9 @@
                 class="form-control"
                 required
               >
+                <option value="TFT_YELLOW" selected>Amarillo</option>
                 <option value="TFT_WHITE">Blanco</option>
                 <option value="TFT_BLACK">Negro</option>
-                <option value="TFT_YELLOW">Amarillo</option>
                 <option value="TFT_NAVY">Azul oscuro</option>
                 <option value="TFT_DARKGREEN">Verde oscuro</option>
                 <option value="TFT_DARKCYAN">Cian oscuro</option>
@@ -490,7 +533,6 @@
                 class="form-control"
                 maxlength="20"
                 placeholder="Máx. 20 caracteres"
-                required
               />
             </div>
             <div class="form-group col-md-6">
@@ -502,7 +544,6 @@
                 class="form-control"
                 maxlength="20"
                 placeholder="Máx. 20 caracteres"
-                required
               />
             </div>
           </div>
@@ -516,7 +557,6 @@
                 class="form-control"
                 maxlength="20"
                 placeholder="Máx. 20 caracteres"
-                required
               />
             </div>
             <div class="form-group col-md-6">
@@ -528,7 +568,6 @@
                 class="form-control"
                 maxlength="20"
                 placeholder="Máx. 20 caracteres"
-                required
               />
             </div>
           </div>
@@ -537,35 +576,145 @@
         <button
           id="executeButton"
           type="submit"
-          class="btn btn-primary btn-block"
+          class="btn btn-primary btn-block mb-2"
           disabled
         >
-          Programar WavesByte Cibtron WB-001
-        </button>
-        <button
-          id="cancelButton"
-          type="button"
-          class="btn btn-danger"
-          style="display: none"
-        >
-          Cancelar
+          Programar Parámetros del Cibtron WB-001
         </button>
       </form>
 
-      <div id="jobLogs"></div>
+      <div
+        id="jobLogs"
+        class="mt-4 p-3 bg-light rounded"
+        style="max-height: 300px; overflow-y: auto"
+      >
+        <p class="text-muted text-center">Esperando logs...</p>
+      </div>
 
-      <div class="d-flex justify-content-center mt-3">
-        <button id="resetButton" class="btn btn-warning">
-          Resetear Cibtron
+      <div class="d-flex justify-content-center mt-4 pt-3 border-top">
+        <button id="resetButton" class="btn btn-warning mr-3">
+          Resetear Firmware del Cibtron
+        </button>
+        <button
+          id="setSerialButton"
+          class="btn btn-info"
+          data-toggle="modal"
+          data-target="#setSerialModal"
+        >
+          Programar Nuevo Número Serial
         </button>
       </div>
     </div>
 
-    <footer>WavesByte ©</footer>
+    <div
+      class="modal fade"
+      id="setSerialModal"
+      tabindex="-1"
+      aria-labelledby="setSerialModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="setSerialModalLabel">
+              Programar Nuevo Número Serial en Dispositivo
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="setSerialForm">
+              <div class="form-group">
+                <label for="modal_NUMERO_SERIAL_A_PROGRAMAR"
+                  >Número Serial a Programar (solo números):</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="modal_NUMERO_SERIAL_A_PROGRAMAR"
+                  name="NUMERO_SERIAL_A_PROGRAMAR"
+                  required
+                  pattern="^\d+$"
+                  title="Solo se permiten números. Ejemplo: 000001"
+                />
+              </div>
+              <div class="form-group">
+                <label for="modal_CLAVE_ACCESO"
+                  >Clave de Acceso (10 caracteres):</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="modal_CLAVE_ACCESO"
+                  name="CLAVE_ACCESO"
+                  required
+                  minlength="10"
+                  maxlength="10"
+                  title="Debe tener 10 caracteres alfanuméricos. Se calcula como los primeros 10 caracteres del SHA256 de 'NSerie-AAAAMMDD'"
+                />
+                <small class="form-text text-muted"
+                  >Clave dinámica: proporcionada por el administrador.</small
+                >
+              </div>
+              <div class="form-group">
+                <label for="modal_port_set_serial"
+                  >Puerto del Dispositivo (para programación física):</label
+                >
+                <select
+                  id="modal_port_set_serial"
+                  name="port"
+                  class="form-control"
+                  required
+                >
+                  <option value="" disabled selected>
+                    Selecciona un puerto...
+                  </option>
+                </select>
+                <small class="form-text text-muted"
+                  >Asegúrate que el dispositivo esté conectado y el puerto sea
+                  el correcto.</small
+                >
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="executeSetSerialJobButton"
+            >
+              Ejecutar Programación de Serial
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center py-3 mt-4 bg-dark text-white">
+      WavesByte © <span id="currentYear"></span>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script>
+      document.getElementById("currentYear").textContent =
+        new Date().getFullYear();
+    </script>
   </body>
 </html>
